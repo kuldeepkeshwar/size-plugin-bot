@@ -1,0 +1,51 @@
+{
+  "name": "size-plugin-bot",
+  "version": "1.0.0",
+  "description": "A Github bot for size-plugin",
+  "author": "kuldeepkeshwar <kuldeepkeshwar@gmail.com>",
+  "license": "ISC",
+  "repository": "https://github.com/kuldeepkeshwar/size-plugin-bot.git",
+  "homepage": "https://github.com/kuldeepkeshwar/size-plugin-bot",
+  "bugs": "https://github.com/kuldeepkeshwar/size-plugin-bot/issues",
+  "keywords": [
+    "size-plugin",
+    "size-plugin-bot"
+  ],
+  "scripts": {
+    "dev": "nodemon",
+    "start": "probot run ./src/index.js",
+    "lint": "standard --fix",
+    "test": "jest && standard",
+    "test:watch": "jest --watch --notify --notifyMode=change --coverage"
+  },
+  "dependencies": {
+    "axios": "^0.19.0",
+    "fs-extra": "^8.0.1",
+    "probot": "^7.2.0"
+  },
+  "devDependencies": {
+    "jest": "^24.0.0",
+    "nock": "^10.0.0",
+    "nodemon": "^1.17.2",
+    "smee-client": "^1.0.2",
+    "standard": "^12.0.1"
+  },
+  "engines": {
+    "node": ">= 8.3.0"
+  },
+  "standard": {
+    "env": [
+      "jest"
+    ]
+  },
+  "nodemonConfig": {
+    "exec": "npm start",
+    "watch": [
+      ".env",
+      "."
+    ]
+  },
+  "jest": {
+    "testEnvironment": "node"
+  }
+}
