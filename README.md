@@ -1,4 +1,8 @@
-# size-plugin
+
+<p align="center">
+  <img src="https://github.com/kuldeepkeshwar/size-plugin-bot/blob/master/static/images/icon.png?raw=true" alt="size-plugin" >
+</p>
+<h1 align="center">size-plugin</h1>
 
 > A GitHub App built with Probot that comments the gzipped sizes of your webpack assets and the changes since the last build into the relevant PR
 
