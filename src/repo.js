@@ -1,4 +1,4 @@
-const os = require("os");
+
 const fs = require("fs-extra");
 const axios = require("axios");
 const {execAndLog} = require("./utils/command");
