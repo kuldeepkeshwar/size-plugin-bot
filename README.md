@@ -1,16 +1,27 @@
-# size-plugin-bot
+# size-plugin
 
-> A Github bot for size-plugin
+> A GitHub App built with Probot that comments the gzipped sizes of your webpack assets and the changes since the last build into the relevant PR
 
-## Setup
+## Usage
+First add an instance of the plugin to your webpack configuration:
 
-```sh
-# Install dependencies
-npm install
+```diff
+// webpack.config.js
++ const SizePlugin = require('size-plugin');
 
-# Run the bot
-npm start
+module.exports = {
+  plugins: [
++    new SizePlugin({writeToDisk:true})
+  ]
+}
 ```
+
+Second Simply [install the app](https://github.com/apps/size-plugin) and watch the magic happen
+
+<p align="center">
+  <img src="https://github.com/kuldeepkeshwar/size-plugin-bot/blob/master/static/images/sample.png?raw=true" alt="size-plugin commenting on a PR with bundle stats" width="760">
+</p>
+
 
 ## Contributing
 
