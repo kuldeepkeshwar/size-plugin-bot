@@ -2,10 +2,6 @@
 const prettyBytes = require("pretty-bytes");
 function decorateComment(files) {
     const width = Math.max(...files.map(file => file.filename.length));
-    // filename,
-    // previous,
-    // size,
-    // diff
     let output = '';
     for (const file of files) {
       const { filename:name, size, diff: delta } = file;
