@@ -1,0 +1,7 @@
+{
+  "name": "size-plugin-bot",
+  "version": 2,
+  "alias": ["size-plugin-bot"],
+  "builds": [{ "src": "index.js", "use": "@now/node" }],
+  "routes": [{ "src": "/(.*)", "dest": "/index.js" }]
+}

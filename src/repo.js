@@ -12,31 +12,30 @@ async function downloadFile(url, path) {
     writer.on("error", reject);
   });
 }
-async function walkRepo(dir, path, options, getContents) {
+async function walk(dir, path, options, getContents) {
   const _options = { ...options, path };
   await fs.ensureDir(`${dir}/${path}`);
   const { data: files } = await getContents(_options);
   const promises = files.map(file => {
     if (file.type === "dir") {
-      return walkRepo(dir, file.path, options, getContents);
+      return walk(dir, file.path, options, getContents);
     }
     return downloadFile(file.download_url, `${dir}/${file.path}`);
   });
   return Promise.all(promises);
 }
-async function cloneRepo({ dir,options, getContents }) {
-  await fs.emptyDir(dir);
-  await walkRepo(dir, options.path, options, getContents);
+async function clone({ dir,options, getContents }) {
+  await walk(dir, options.path, options, getContents);
 }
-async function runBuild(localRepoPath) {
+async function build(localRepoPath) {
   const child_process_options = { stdio: "inherit", cwd: localRepoPath };
   await execAndLog("npm install", child_process_options);
   await execAndLog("SIZE_PLUGIN_BOT=true npm run build", child_process_options);
   
 }
 
-async function cleanUp(localRepoPath) {
+async function clean(localRepoPath) {
   await fs.emptyDir(localRepoPath);
 }
 
-module.exports = { cloneRepo, runBuild, cleanUp };
+module.exports = { clone, build, clean };

@@ -1,11 +1,13 @@
-const repo = require("./repo");
+
+const fs = require("fs-extra");
 const os = require("os");
-const tmpDir = os.tmpdir();
+const repo = require("./repo");
+const rootTempDir = "/tmp";
 const {decorateComment} = require("./utils/template");
 
 const DIFF_FILE = "size-plugin-diff.json";
 async function getSize(context) {
-  let repoDir;
+  let dir;
   try {
     const {
       ref,
@@ -18,21 +20,30 @@ async function getSize(context) {
       path: "/",
       ref: ref
     };
-    const dir = `${tmpDir}/${options.repo}`;
-    await repo.cloneRepo({
+    const exists = await fs.pathExists(rootTempDir)
+    const tmpDir=exists?rootTempDir:os.tmpdir();
+    dir = `${tmpDir}/${login}/${options.repo}/${ref}/${Date.now()}`;
+    await fs.emptyDir(dir);
+    console.log("cloning repo to ", dir);
+    await repo.clone({
       dir,
       options,
       getContents: context.github.repos.getContents
     });
-    await repo.runBuild(repoDir);
-    const buffer = await fs.readFile(`${repoDir}/${DIFF_FILE}`);
+    
+    console.log("running build");
+    await repo.build(dir);
+    
+    console.log("build completed");
+    
+    const buffer = await fs.readFile(`${dir}/${DIFF_FILE}`);
     const { files } = JSON.parse(buffer.toString());
     const stats = decorateComment(files);
-    await repo.cleanUp(repoDir);
+    await repo.clean(dir);
     return stats;
   } catch (err) {
-    if (repoDir) {
-      await repo.cleanUp(repoDir);
+    if (dir) {
+      await repo.clean(dir);
     }
     console.error(err);
   }
