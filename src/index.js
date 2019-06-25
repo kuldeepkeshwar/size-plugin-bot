@@ -1,6 +1,7 @@
 
 
 const {getSize}=require("./size");
+const keepAlive= require("./utils/keep-alive");
 
 async function handlePullRequest(context) {  
   const size = await getSize(context);
@@ -17,7 +18,11 @@ ${size}
 
 module.exports = app => {
   console.log('Yay, the app was loaded!')
+  
   const router = app.route('/size-plugin')
+  router.use(keepAlive({
+    path:"/_keepalive"
+  }))
   router.get('/ping', (req, res) => {
     res.send('pong!!')
   })
