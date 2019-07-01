@@ -3,9 +3,9 @@ require('dotenv').config()
 
 const execa = require('execa');
 const secrets = {
-    "app-id": process.env.APP_ID,
-    "webhook-secret": process.env.WEBHOOK_SECRET,
-    // "private-key-base64-encoded": process.env.PRIVATE_KEY
+    "size-plugin-bot-app-id": process.env.APP_ID,
+    "size-plugin-bot-webhook-secret": process.env.WEBHOOK_SECRET,
+    "size-plugin-bot-private-key-base64-encoded": process.env.PRIVATE_KEY
 };
 
 (async () => {

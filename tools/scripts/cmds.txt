@@ -1,0 +1,5 @@
+--- pem to single line
+awk 'NF {sub(/\r/, ""); printf "%s\\n",$0;}' key.pem
+
+--- add secret from .key
+now secret add size-plugin-bot-private-key-base64-encoded -- "`< .key`"
