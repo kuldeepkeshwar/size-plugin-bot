@@ -20,9 +20,9 @@ function decorateComment(files) {
         deltaText = (delta > 0 ? "+" : "") + prettyBytes(delta);
         if (delta > 1024) {
           sizeText = bold(sizeText);
-          deltaText = colorText('red',deltaText);
+          deltaText = textWithEmoji('red',deltaText);
         } else if (delta < -10) {
-          deltaText = colorText('green',deltaText);
+          deltaText = textWithEmoji('green',deltaText);
         }
         sizeText += ` (${deltaText})`;
       }
@@ -35,8 +35,13 @@ function decorateComment(files) {
     return text;
     //return `<b>${text}</b>`;
   }
+
+  function textWithEmoji(color, text) {
+    const emoji= {red:'🚫',green:'✅'}
+    return `${text} ${emoji[color]}`;
+  }
   function colorText(color, text) {
     return text;
-    //return `<span style="color:${color}">${text}</span>`;
+    //return `<span style="color:${color}">${text} </span>`;
   }
   module.exports={decorateComment}
