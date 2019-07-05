@@ -18,7 +18,7 @@ First add an instance of the plugin to your webpack configuration:
 
 module.exports = {
   plugins: [
-+    new SizePlugin({writeToDisk:true})
++    new SizePlugin()
   ]
 }
 ```
