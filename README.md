@@ -10,7 +10,7 @@
 > A GitHub App built with Probot that comments the gzipped sizes of your webpack assets and the changes since the last build into the relevant PR
 
 ## Usage
-First add an instance of the plugin to your webpack configuration:
+First add an instance of the [size-plugin](https://github.com/GoogleChromeLabs/size-plugin) to your webpack configuration:
 
 ```diff
 // webpack.config.js
