@@ -136,4 +136,4 @@ url: https://github.com/kuldeepkeshwar/size-plugin-bot
 
 # Set to true when your GitHub App is available to the public or false when it is only accessible to the owner of the app.
 # Default: true
-public: false
+public: true
