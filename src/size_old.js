@@ -2,7 +2,7 @@
 
 const fs = require('fs-extra');
 const os = require('os');
-const repo = require('./repo');
+const repo = require('./utils/repo');
 
 const rootTempDir = '/tmp';
 const { decorateComment } = require('./utils/template');

@@ -6,7 +6,7 @@ const axios = require('axios');
 const { decorateComment } = require('./utils/template');
 const { MAX_RETRY, RETRY_INTERVAL } = require('./config');
 
-const url = 'https://size-plugin-store.now.sh/sizes';
+const url = 'https://size-plugin-store.now.sh/diff';
 
 function hanldeError(error) {
   if (error.response) {

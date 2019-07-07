@@ -1,7 +1,7 @@
 
 const fs = require('fs-extra');
 const axios = require('axios');
-const { execAndLog } = require('./utils/command');
+const { execAndLog } = require('./command');
 
 async function downloadFile(url, path) {
   const response = await axios(url, { responseType: 'stream' });
