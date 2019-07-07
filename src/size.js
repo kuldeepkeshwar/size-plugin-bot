@@ -1,50 +1,65 @@
+/* eslint-disable camelcase */
+/* eslint-disable no-console */
 
-const fs = require("fs-extra");
-const os = require("os");
-const repo = require("./repo");
-const rootTempDir = "/tmp";
-const {decorateComment} = require("./utils/template");
+const axios = require('axios');
 
-const DIFF_FILE = "size-plugin-diff.json";
+const { decorateComment } = require('./utils/template');
+const { MAX_RETRY, RETRY_INTERVAL } = require('./config');
+
+const url = 'https://size-plugin-store.now.sh/sizes';
+
+
+function fetchDiff({
+  repo, branch, sha, pull_request_number,
+}) {
+  return new Promise((resolve, reject) => {
+    const params = {
+      repo,
+      branch,
+      sha,
+      pull_request_number,
+    };
+    let retry = 0;
+    const id = setInterval(() => {
+      (async function poll() {
+        try {
+          retry += 1;
+          const response = await axios.get(url, { params });
+          clearInterval(id);
+          resolve(response.data);
+        } catch (error) {
+          console.error(error);
+          if (retry === MAX_RETRY) {
+            clearInterval(id);
+            reject(new Error("couldn't found diff"));
+          }
+        }
+      }());
+    }, RETRY_INTERVAL);
+  });
+}
+// eslint-disable-next-line consistent-return
 async function getSize(context) {
-  let dir;
   try {
     const {
-      ref,
-      user: { login },
-      repo: { name }
-    } = context.payload.pull_request.head;
-    const options = {
-      repo: name,
-      owner: login,
-      path: "/",
-      ref: ref
-    };
-    const exists = await fs.pathExists(rootTempDir)
-    const tmpDir=exists?rootTempDir:os.tmpdir();
-    dir = `${tmpDir}/${login}/${options.repo}/${ref}/${Date.now()}`;
-    await fs.emptyDir(dir);
-    console.log("cloning repo to ", dir);
-    await repo.clone({
-      dir,
-      options,
-      getContents: context.github.repos.getContents
+      pull_request: {
+        number: pull_request_number,
+        base: { ref: branch },
+      },
+    } = context.payload;
+    const {
+      repository: { full_name: repo },
+      after: sha,
+    } = context.payload;
+    const { files } = await fetchDiff({
+      repo,
+      branch,
+      sha,
+      pull_request_number,
     });
-    
-    console.log("running build");
-    await repo.build(dir);
-    
-    console.log("build completed");
-    
-    const buffer = await fs.readFile(`${dir}/${DIFF_FILE}`);
-    const { files } = JSON.parse(buffer.toString());
     const stats = decorateComment(files);
-    await repo.clean(dir);
     return stats;
   } catch (err) {
-    if (dir) {
-      await repo.clean(dir);
-    }
     console.error(err);
   }
 }
