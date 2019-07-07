@@ -8,7 +8,15 @@ const { MAX_RETRY, RETRY_INTERVAL } = require('./config');
 
 const url = 'https://size-plugin-store.now.sh/sizes';
 
-
+function hanldeError(error) {
+  if (error.response) {
+    console.error({ data: error.response.data, status: error.response.status });
+  } else if (error.request) {
+    console.error(error.request);
+  } else {
+    console.error('Error', error.message);
+  }
+}
 function fetchDiff({
   repo, branch, sha, pull_request_number,
 }) {
@@ -28,7 +36,7 @@ function fetchDiff({
           clearInterval(id);
           resolve(response.data);
         } catch (error) {
-          console.error(error);
+          hanldeError(error);
           if (retry === MAX_RETRY) {
             clearInterval(id);
             reject(new Error("couldn't found diff"));
