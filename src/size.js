@@ -39,7 +39,7 @@ function fetchDiff({
           hanldeError(error);
           if (retry === MAX_RETRY) {
             clearInterval(id);
-            reject(new Error("couldn't found diff"));
+            reject(new Error(`waiting for diff(retry ${retry}): ${repo} ${branch} ${pull_request_number} ${sha}`));
           }
         }
       }());
