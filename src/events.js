@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
 
-const { getSize } = require('./size');
+const diff = require('./diff');
 
 // eslint-disable-next-line consistent-return
 async function handlePullRequest(context) {
-  const size = await getSize(context);
+  const size = await diff.get(context);
   if (size) {
     const issueComment = context.issue({
       body: `
