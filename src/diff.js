@@ -15,12 +15,11 @@ async function get(context) {
     const {
       pull_request: {
         number: pull_request_number,
-        base: { ref: branch },
+        head: { ref: branch,sha },
       },
     } = context.payload;
     const {
-      repository: { full_name: repo },
-      after: sha,
+      repository: { full_name: repo }
     } = context.payload;
     const { diff:{files} } = await fetchWithRetry(() => {
       const params = {
