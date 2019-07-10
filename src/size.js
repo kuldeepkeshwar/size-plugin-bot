@@ -8,12 +8,12 @@ const { fetchWithRetry } = require('./utils/api');
 
 const url = `${SIZE_STORE_ENDPOINT}/size`;
 
-function isCommitedByMe(commits){
-  if(commits.length===1){
-    const [commit]=commits;
-    const {author:{name}}=commit;
-    if(name==="size-plugin[bot]"){
-     return true; 
+function isCommitedByMe(commits) {
+  if (commits.length === 1) {
+    const [commit] = commits;
+    const { author: { name } } = commit;
+    if (name === 'size-plugin[bot]') {
+      return true;
     }
   }
   return false;
@@ -21,7 +21,9 @@ function isCommitedByMe(commits){
 // eslint-disable-next-line consistent-return
 async function get(context) {
   try {
-    const { ref, repository: { name, full_name: repo, owner }, after: sha,commits } = context.payload;
+    const {
+      ref, repository: { name, full_name: repo, owner }, after: sha, commits,
+    } = context.payload;
     const branch = ref.replace('refs/heads/', '');
     if (branch === 'master' && !isCommitedByMe(commits)) {
       const params = {
@@ -29,10 +31,7 @@ async function get(context) {
         branch,
         sha,
       };
-      console.log({repo,
-        branch,
-        sha,})
-      const {filename,size} = await fetchWithRetry(() => axios.get(url, { params }));
+      const { filename, size } = await fetchWithRetry(() => axios.get(url, { params }));
       const content = Buffer.from(JSON.stringify(size)).toString('base64');
       context.github.repos.createOrUpdateFile({
         owner: owner.name,
