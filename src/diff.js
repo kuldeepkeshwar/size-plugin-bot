@@ -22,7 +22,7 @@ async function get(context) {
       repository: { full_name: repo },
       after: sha,
     } = context.payload;
-    const { files } = await fetchWithRetry(() => {
+    const { diff:{files} } = await fetchWithRetry(() => {
       const params = {
         repo,
         branch,

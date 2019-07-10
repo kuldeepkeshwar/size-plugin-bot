@@ -4,7 +4,6 @@
 const { register } = require('./events');
 const keepAlive = require('./utils/keep-alive');
 
-
 module.exports = (app) => {
   console.log('Yay, the app was loaded!');
   const router = app.route('/size-plugin');
