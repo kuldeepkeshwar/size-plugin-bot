@@ -8,11 +8,7 @@ async function handlePullRequest(context) {
   const message = await diff.get(context);
   if (message) {
     const issueComment = context.issue({
-      body: `
-\`\`\`
-${message}
-\`\`\`
-    `,
+      body: message,
     });
     return context.github.issues.createComment(issueComment);
   }
