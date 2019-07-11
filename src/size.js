@@ -47,8 +47,9 @@ async function get(context) {
         branch,
         sha,
       };
-      const { filename, size } = await fetchWithRetry(() => axios.get(url, { params }));
-      const content = Buffer.from(JSON.stringify(size, null, 2)).toString('base64');
+      const data= await fetchWithRetry(() => axios.get(url, { params }));
+      for(let {filename,size} of Object.values(data)){
+        const content = Buffer.from(JSON.stringify(size, null, 2)).toString('base64');
       const file = await getFile({
         context, owner, name, branch, filename,
       });
@@ -71,6 +72,7 @@ async function get(context) {
           message: `created ${filename} 👍`,
           content,
         });
+      }
       }
     }
   } catch (err) {

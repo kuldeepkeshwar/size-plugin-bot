@@ -21,7 +21,7 @@ async function get(context) {
     const {
       repository: { full_name: repo }
     } = context.payload;
-    const { diff:{files} } = await fetchWithRetry(() => {
+    const data = await fetchWithRetry(() => {
       const params = {
         repo,
         branch,
@@ -30,8 +30,24 @@ async function get(context) {
       };
       return axios.get(url, { params });
     });
-    const stats = decorateComment(files);
-    return stats;
+    const values=Object.values(data);
+    return values.length===1?(
+    `
+\`\`\`
+${decorateComment(values[0].diff.files)}
+\`\`\`
+`
+    ):values.reduce((agg,item)=>{
+      const { filename,diff:{files} }=item;
+return agg+`
+
+${filename}:
+\`\`\`
+${decorateComment(files)}
+\`\`\`
+
+`
+    } ,'');
   } catch (err) {
     console.error(err);
   }
