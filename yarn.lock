@@ -431,11 +431,6 @@
     "@types/istanbul-lib-coverage" "*"
     "@types/istanbul-lib-report" "*"
 
-"@types/node@^12.0.7":
-  version "12.0.10"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.0.10.tgz#51babf9c7deadd5343620055fc8aff7995c8b031"
-  integrity sha512-LcsGbPomWsad6wmMNv7nBLw7YYYyfdYcz6xryKYQhx89c3XXan+8Q6AJ43G5XDIaklaVkK3mE4fCb0SBvMiPSQ==
-
 "@types/stack-utils@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-1.0.1.tgz#0a851d3bd96498fa25c33ab7278ed3bd65f06c3e"
@@ -3688,9 +3683,9 @@ lodash.uniq@^4.5.0:
   integrity sha1-0CJTc662Uq3BvILklFM5qEJ1R3M=
 
 lodash@^4.17.11, lodash@^4.17.4, lodash@^4.17.5, lodash@^4.3.0:
-  version "4.17.11"
-  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.11.tgz#b39ea6229ef607ecd89e2c8df12536891cac9b8d"
-  integrity sha512-cQKh8igo5QUhZ7lg38DYWAxMvjSAKG0A8wGSVimP07SIUEK2UO+arSRKbRZWtelMtN5V0Hkwh5ryOto/SshYIg==
+  version "4.17.14"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.14.tgz#9ce487ae66c96254fe20b599f21b6816028078ba"
+  integrity sha512-mmKYbW3GLuJeX+iGP+Y7Gp1AiGHGbXHCOh/jZmrawMmsE7MS4znI3RL2FsjbqOyMayHInjOeykW7PEajUk1/xw==
 
 loose-envify@^1.0.0, loose-envify@^1.4.0:
   version "1.4.0"
@@ -4598,15 +4593,7 @@ pretty-format@^24.8.0:
     ansi-styles "^3.2.0"
     react-is "^16.8.4"
 
-probot-serverless-now@^2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/probot-serverless-now/-/probot-serverless-now-2.1.1.tgz#173730abd51608992d715ee6a3deef6587976f9e"
-  integrity sha512-X5v+hGoZnwjxvk6DD5t1b7GpjE6F+9LycYZ4LFmaqrV/OSOAsLuTX3j53zMtGI9OJJKOVgMQHhbyo9m+WhpEEg==
-  dependencies:
-    "@types/node" "^12.0.7"
-    probot "^9.2.13"
-
-probot@^9.2.12, probot@^9.2.13:
+probot@^9.2.12:
   version "9.2.15"
   resolved "https://registry.yarnpkg.com/probot/-/probot-9.2.15.tgz#9ce82213d78860866773b092531ca78ece09214b"
   integrity sha512-tZF1IdpbigwODWSGZEvO+6xGKemzNhRtNJMYs2sa8nPajfhZsQ0NX/g04bfX9YYWuBjC2gn7yNHRLG2+DLSzzw==
