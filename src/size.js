@@ -18,19 +18,21 @@ function isCommitedByMe(commits) {
   }
   return false;
 }
-async function getFile({context,owner,name,branch,filename}){
-  try{
-    const {data}=await context.github.repos.getContents({
-        owner: owner.name,
-        repo: name,
-        branch,
-        path: filename,
-      })
+async function getFile({
+  context, owner, name, branch, filename,
+}) {
+  try {
+    const { data } = await context.github.repos.getContents({
+      owner: owner.name,
+      repo: name,
+      branch,
+      path: filename,
+    });
     return data;
-  }catch(err){
-    console.error('getFile',err);
+  } catch (err) {
+    console.error('getFile', err);
   }
-} 
+}
 
 // eslint-disable-next-line consistent-return
 async function get(context) {
@@ -45,10 +47,13 @@ async function get(context) {
         branch,
         sha,
       };
-      const { filename, size } = await fetchWithRetry(() => axios.get(url, { params }));
-      const content = Buffer.from(JSON.stringify(size,null, 2)).toString('base64');
-      const file=await getFile({context,owner,name,branch,filename})
-      if(file && file.content!==content){
+      const data= await fetchWithRetry(() => axios.get(url, { params }));
+      for(let {filename,size} of Object.values(data)){
+        const content = Buffer.from(JSON.stringify(size, null, 2)).toString('base64');
+      const file = await getFile({
+        context, owner, name, branch, filename,
+      });
+      if (file && file.content !== content) {
         await context.github.repos.createOrUpdateFile({
           owner: owner.name,
           repo: name,
@@ -56,17 +61,18 @@ async function get(context) {
           branch,
           message: `updated ${filename} 👍`,
           content,
-          sha:file.sha
+          sha: file.sha,
         });
-      }else if(!file){
+      } else if (!file) {
         await context.github.repos.createOrUpdateFile({
           owner: owner.name,
           repo: name,
           path: filename,
           branch,
           message: `created ${filename} 👍`,
-          content
+          content,
         });
+      }
       }
     }
   } catch (err) {
