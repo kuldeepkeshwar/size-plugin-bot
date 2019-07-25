@@ -40,6 +40,11 @@ If you have suggestions for how size-plugin could be improved, or want to report
 
 For more, check out the [Contributing Guide](CONTRIBUTING.md).
 
+#### like it?
+
+⭐️ this repo
+
+&nbsp;
 ## License
 
 [ISC](LICENSE) © 2019 kuldeepkeshwar <kuldeepkeshwar@gmail.com>

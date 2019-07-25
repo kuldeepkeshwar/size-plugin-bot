@@ -2,6 +2,7 @@
 /* eslint-disable no-console */
 
 const axios = require('axios');
+const getConfig = require('probot-config')
 const { SIZE_STORE_ENDPOINT } = require('./config');
 const { decorateComment } = require('./utils/template');
 const { fetchWithRetry } = require('./utils/api');
@@ -21,6 +22,13 @@ async function get(context) {
     const {
       repository: { full_name: repo }
     } = context.payload;
+    
+    try{
+      const botConfig = await getConfig(context, 'size-plugin.yml')
+      console.log(botConfig);
+    }catch(err){
+      console.error(err);
+    }
     const data = await fetchWithRetry(() => {
       const params = {
         repo,
