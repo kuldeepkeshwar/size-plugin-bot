@@ -7,7 +7,9 @@
 </p>
 
 
-> A GitHub App built with Probot that comments the gzipped sizes of your webpack assets and the changes since the last build into the relevant PR
+> A GitHub 🤖 built with Probot that helps you to keep an 👁️ on static assert 📦 sizes of your application and gives instant feedback 📝 for developer whenever they make a change.
+
+##### 🤖 comments the gzipped sizes of your webpack assets and the changes since the last build into the relevant PR
 
 ## Usage
 First add an instance of the [size-plugin](https://github.com/GoogleChromeLabs/size-plugin) to your webpack configuration:
