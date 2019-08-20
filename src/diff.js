@@ -7,7 +7,7 @@ const axios = require('axios');
 const getConfig = require('probot-config');
 const { toMap } = require('./utils/utils');
 const { SIZE_STORE_ENDPOINT } = require('./config');
-const { decorateComment } = require('./utils/template');
+const { decorateComment,decorateHeading } = require('./utils/template');
 const { fetchWithRetry } = require('./utils/api');
 
 const url = `${SIZE_STORE_ENDPOINT}/diff`;
@@ -25,7 +25,7 @@ function commentMessageTemplate(item) {
     diff: { files },
   } = item;
   return `
-${filename.replace('.json', '')}
+${decorateHeading(filename,files)}
 
 \`\`\`
 ${decorateComment(files)}
@@ -36,6 +36,8 @@ ${decorateComment(files)}
 function combinedCommentMessageTemplate(items) {
   return items.length === 1
     ? `
+${decorateHeading('',items[0].diff.files)}
+
 \`\`\`
 ${decorateComment(items[0].diff.files)}
 \`\`\`
@@ -47,7 +49,8 @@ ${decorateComment(items[0].diff.files)}
       } = item;
       return `${agg}
 
-${filename.replace('.json', '')}
+${decorateHeading(filename,files)}
+
 \`\`\`
 ${decorateComment(files)}
 \`\`\`
