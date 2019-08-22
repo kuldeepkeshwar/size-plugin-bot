@@ -21,7 +21,7 @@ First add an instance of the [size-plugin](https://github.com/GoogleChromeLabs/s
 
 module.exports = {
   plugins: [
-+    new SizePlugin()
++    new SizePlugin({publish:true})
   ]
 }
 ```
