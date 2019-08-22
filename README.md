@@ -8,7 +8,7 @@
 </p>
 
 
-> A GitHub 🤖 built with Probot that helps you to keep an 👁️ on static assert 📦 sizes of your application and gives instant feedback 📝 for developer whenever they make a change.
+> A GitHub 🤖 built with Probot that helps you to keep an 👁️ on static assert 📦 sizes of your application and gives instant feedback 📝 for developer whenever they make change.
 
 ##### 🤖 comments the gzipped sizes of your webpack assets and the changes since the last build into the relevant PR
 
