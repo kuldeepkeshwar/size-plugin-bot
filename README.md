@@ -1,4 +1,5 @@
 
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors)
 <p align="center">
   <img src="https://github.com/kuldeepkeshwar/size-plugin-bot/blob/master/static/images/icon.png?raw=true" alt="size-plugin" >
 </p>
@@ -7,7 +8,9 @@
 </p>
 
 
-> A GitHub App built with Probot that comments the gzipped sizes of your webpack assets and the changes since the last build into the relevant PR
+> A GitHub 🤖 built with Probot that helps you to keep an 👁️ on static assert 📦 sizes of your application and gives instant feedback 📝 for developer whenever they make a change.
+
+##### 🤖 comments the gzipped sizes of your webpack assets and the changes since the last build into the relevant PR
 
 ## Usage
 First add an instance of the [size-plugin](https://github.com/GoogleChromeLabs/size-plugin) to your webpack configuration:
@@ -18,7 +21,7 @@ First add an instance of the [size-plugin](https://github.com/GoogleChromeLabs/s
 
 module.exports = {
   plugins: [
-+    new SizePlugin()
++    new SizePlugin({publish:true})
   ]
 }
 ```
@@ -48,3 +51,19 @@ For more, check out the [Contributing Guide](CONTRIBUTING.md).
 ## License
 
 [ISC](LICENSE) © 2019 kuldeepkeshwar <kuldeepkeshwar@gmail.com>
+
+## Contributors ✨
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore -->
+<table>
+  <tr>
+    <td align="center"><a href="https://in.linkedin.com/in/kuldeepkeshwar"><img src="https://avatars1.githubusercontent.com/u/10448534?v=4" width="100px;" alt="anotherjsguy"/><br /><sub><b>anotherjsguy</b></sub></a><br /><a href="https://github.com/kuldeepkeshwar/size-plugin-bot/commits?author=kuldeepkeshwar" title="Code">💻</a></td>
+  </tr>
+</table>
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!

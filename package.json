@@ -45,6 +45,12 @@
       "jest"
     ]
   },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "none",
+    "useTabs": true,
+    "tabWidth": 2
+  },
   "nodemonConfig": {
     "exec": "npm start",
     "watch": [
