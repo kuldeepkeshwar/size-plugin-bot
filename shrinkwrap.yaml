@@ -1,5 +1,6 @@
 dependencies:
   axios: 0.19.0
+  emojis-list: 3.0.0
   fs-extra: 8.1.0
   pretty-bytes: 5.2.0
   probot: 9.2.20
@@ -1535,6 +1536,12 @@ packages:
     dev: true
     resolution:
       integrity: sha512-CwBLREIQ7LvYFB0WyRvwhq5N5qPhc6PMjD6bYggFlI5YyDgl+0vxq5VHbMOFqLg7hfWzmu8T5Z1QofhmTIhItA==
+  /emojis-list/3.0.0:
+    dev: false
+    engines:
+      node: '>= 4'
+    resolution:
+      integrity: sha512-/kyM18EfinwXZbno9FyUGeFh87KC8HRQBQGildHZbEuRyWFOmv1U10o9BBp8XVZDVNNuQKyIGIu5ZYAAXJ0V2Q==
   /encodeurl/1.0.2:
     dev: false
     engines:
@@ -6227,6 +6234,7 @@ shrinkwrapVersion: 3
 specifiers:
   axios: ^0.19.0
   dotenv: ^8.0.0
+  emojis-list: ^3.0.0
   eslint: ^5.16.0
   eslint-config-airbnb-base: ^13.2.0
   eslint-plugin-import: ^2.18.0
