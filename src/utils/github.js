@@ -1,5 +1,5 @@
+const BOT = 'size-plugin[bot]';
 
-const BOT = 'size-plugin-dev[bot]';
 async function createBranch(github, {
   owner, repo, base = 'master', branch,
 }) {
