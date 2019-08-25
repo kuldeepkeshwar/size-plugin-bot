@@ -1,5 +1,5 @@
-
 const BOT = 'size-plugin[bot]';
+
 async function createBranch(github, {
   owner, repo, base = 'master', branch,
 }) {
