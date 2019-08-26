@@ -2,7 +2,7 @@
 /* eslint-disable no-console */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
-const BOT = 'size-plugin[bot]';
+const { BOT } = require('./../config');
 
 async function createBranch(github, {
   owner, repo, base = 'master', branch,
@@ -35,7 +35,14 @@ async function getFile(github, {
     });
     return data;
   } catch (err) {
-    console.error('getFile:', owner, repo, branch, filename, err.message || err.status);
+    console.error(
+      'getFile:',
+      owner,
+      repo,
+      branch,
+      filename,
+      err.message || err.status,
+    );
   }
   return null;
 }
@@ -43,7 +50,9 @@ async function updateFile(github, {
   owner, repo, branch, file,
 }) {
   const { filename, content } = file;
-  const data = Buffer.from(JSON.stringify(content, null, 2)).toString('base64');
+  const data = Buffer.from(JSON.stringify(content, null, 2)).toString(
+    'base64',
+  );
   const oldFile = await getFile(github, {
     owner,
     repo,
@@ -71,9 +80,12 @@ async function updateFile(github, {
     });
   }
 }
-async function createPullRequest(github, {
-  owner, repo, base, head, title, body, files,
-}) {
+async function createPullRequest(
+  github,
+  {
+    owner, repo, base, head, title, body, files,
+  },
+) {
   console.log('create branch:', head);
 
   await createBranch(github, {
@@ -103,9 +115,13 @@ async function createPullRequest(github, {
   });
   return data;
 }
-async function createReviewRequest(github, {
-  owner, repo, pull_number, reviewers,
-}) {
+async function createReviewRequest(
+  github,
+  {
+    owner, repo, pull_number, reviewers,
+  },
+) {
+  console.log('createReviewRequest', owner, repo, pull_number, reviewers);
   github.pulls.createReviewRequest({
     owner,
     repo,

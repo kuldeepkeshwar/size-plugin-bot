@@ -3,4 +3,19 @@ const RETRY_INTERVAL = 30 * 1000;
 
 const SIZE_STORE_ENDPOINT = process.env.SIZE_STORE_ENDPOINT || 'https://size-plugin-store.now.sh';
 
-module.exports = { MAX_RETRY, RETRY_INTERVAL, SIZE_STORE_ENDPOINT };
+const BOT = 'size-plugin[bot]';
+
+const STAR_REPO_MESSAGE = `
+
+
+#### like it?
+⭐️ give [me](https://github.com/kuldeepkeshwar/size-plugin-bot) 😊
+`;
+
+module.exports = {
+  MAX_RETRY,
+  RETRY_INTERVAL,
+  SIZE_STORE_ENDPOINT,
+  STAR_REPO_MESSAGE,
+  BOT,
+};

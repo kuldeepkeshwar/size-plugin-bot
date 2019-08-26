@@ -7,8 +7,12 @@
 const axios = require('axios');
 const emoji = require('./utils/emoji');
 const { toMap, getFileFromConfig } = require('./utils/utils');
-const { isCommitedByMe, createPullRequest } = require('./utils/github');
-const { SIZE_STORE_ENDPOINT } = require('./config');
+const {
+  isCommitedByMe,
+  createPullRequest,
+  createReviewRequest,
+} = require('./utils/github');
+const { SIZE_STORE_ENDPOINT, STAR_REPO_MESSAGE } = require('./config');
 const { fetchWithRetry } = require('./utils/api');
 
 const url = `${SIZE_STORE_ENDPOINT}/size`;
@@ -39,7 +43,9 @@ async function get(context) {
             );
             const sizeMap = toMap(values, 'filename');
             let counter = 0;
-            for (const filename of Object.keys(sizeFileNameMap)) {
+            for (const filename of Object.keys(
+              sizeFileNameMap,
+            )) {
               if (sizeMap[filename]) {
                 files.push({
                   filename,
@@ -49,16 +55,21 @@ async function get(context) {
                 counter += 1;
               }
             }
-            if (counter !== Object.values(sizeFileNameMap).length) {
+            if (
+              counter
+                                !== Object.values(sizeFileNameMap).length
+            ) {
               console.log(Object.values(sizeFileNameMap));
               throw Error('waiting for all file sizes');
             }
           } else {
             files.push(
-              ...Object.values(data).map(({ filename, size }) => ({
-                filename,
-                content: size,
-              })),
+              ...Object.values(data).map(
+                ({ filename, size }) => ({
+                  filename,
+                  content: size,
+                }),
+              ),
             );
           }
         }));
@@ -67,8 +78,10 @@ async function get(context) {
       }
       const title = `${emoji.random().join(' ')} update sizes`;
       const body = `👇 
-${head_commit.message || ''}`;
-      await createPullRequest(context.github, {
+${head_commit.id} : ${head_commit.message || ''}
+${STAR_REPO_MESSAGE}
+`;
+      const { number } = await createPullRequest(context.github, {
         owner: owner.name,
         repo: name,
         base: 'master',
@@ -77,7 +90,12 @@ ${head_commit.message || ''}`;
         body,
         files,
       });
-      await createReviewRequest(context.github, { owner: owner.name, repo: name });
+      await createReviewRequest(context.github, {
+        owner: owner.name,
+        repo: name,
+        pull_number: number,
+        reviewers: commits.map(({ author: { username } }) => username),
+      });
     }
   } catch (err) {
     console.error(err);
