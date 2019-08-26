@@ -9,7 +9,7 @@ const STAR_REPO_MESSAGE = `
 
 
 #### like it?
-⭐️ give [me](https://github.com/kuldeepkeshwar/size-plugin-bot) 😊
+⭐️ [me](https://github.com/kuldeepkeshwar/size-plugin-bot) 😊
 `;
 
 module.exports = {
