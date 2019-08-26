@@ -1,4 +1,8 @@
-const BOT = 'size-plugin[bot]';
+/* eslint-disable camelcase */
+/* eslint-disable no-console */
+/* eslint-disable no-await-in-loop */
+/* eslint-disable no-restricted-syntax */
+const { BOT } = require('./../config');
 
 async function createBranch(github, {
   owner, repo, base = 'master', branch,
@@ -40,12 +44,13 @@ async function getFile(github, {
       err.message || err.status,
     );
   }
+  return null;
 }
 async function updateFile(github, {
   owner, repo, branch, file,
 }) {
   const { filename, content } = file;
-  const _content = Buffer.from(JSON.stringify(content, null, 2)).toString(
+  const data = Buffer.from(JSON.stringify(content, null, 2)).toString(
     'base64',
   );
   const oldFile = await getFile(github, {
@@ -54,14 +59,14 @@ async function updateFile(github, {
     branch,
     filename,
   });
-  if (oldFile && oldFile.content !== _content) {
+  if (oldFile && oldFile.content !== data) {
     await github.repos.createOrUpdateFile({
       owner,
       repo,
       branch,
       path: filename,
       message: `update ${filename} 👍`,
-      content: _content,
+      content: data,
       sha: oldFile.sha,
     });
   } else if (!oldFile) {
@@ -71,36 +76,57 @@ async function updateFile(github, {
       branch,
       path: filename,
       message: `create ${filename} 👍`,
-      content: _content,
+      content: data,
     });
   }
 }
 async function createPullRequest(
   github,
   {
-    owner, repo, base, head, title,body, files,
+    owner, repo, base, head, title, body, files,
   },
 ) {
   console.log('create branch:', head);
 
   await createBranch(github, {
-    owner, repo, base, branch: head,
+    owner,
+    repo,
+    base,
+    branch: head,
   });
   for (const file of files) {
     console.log('update file', head, file.filename);
     await updateFile(github, {
-      owner, repo, branch: head, file,
+      owner,
+      repo,
+      branch: head,
+      file,
     });
   }
 
   console.log('open pull request');
-  await github.pulls.create({
+  const { data } = await github.pulls.create({
     owner,
     repo,
     title,
     body,
     head,
     base,
+  });
+  return data;
+}
+async function createReviewRequest(
+  github,
+  {
+    owner, repo, pull_number, reviewers,
+  },
+) {
+  console.log('createReviewRequest', owner, repo, pull_number, reviewers);
+  github.pulls.createReviewRequest({
+    owner,
+    repo,
+    pull_number,
+    reviewers,
   });
 }
 function isCommitedByMe(commits = []) {
@@ -120,6 +146,7 @@ function isPullRequestOpenedByMe(user) {
 module.exports = {
   isCommitedByMe,
   isPullRequestOpenedByMe,
+  createReviewRequest,
   getFile,
   updateFile,
   createPullRequest,

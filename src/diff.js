@@ -53,7 +53,7 @@ ${decorateComment(files)}
 \`\`\`
 
 `;
-		  }, '');
+    }, '');
 }
 // eslint-disable-next-line consistent-return
 async function get(context) {
@@ -89,7 +89,9 @@ async function get(context) {
             let counter = 0;
             for (const filename of Object.keys(sizeFileNameMap)) {
               if (sizeMap[filename]) {
-                const message = commentMessageTemplate(sizeMap[filename]);
+                const message = commentMessageTemplate(
+                  sizeMap[filename],
+                );
                 commentPullRequest(context, message).then(
                   console.log,
                   console.error,

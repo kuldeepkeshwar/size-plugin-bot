@@ -3,7 +3,6 @@
 /* eslint-disable no-nested-ternary */
 const prettyBytes = require('pretty-bytes');
 
-
 function textWithEmoji(color, text) {
   const emoji = { red: '🚫', green: '✅' };
   return `${text} ${emoji[color]}`;
@@ -45,7 +44,9 @@ function decorateHeading(name, files) {
     );
 
     const total = `Overall size: ${prettyBytes(result.total)}`;
-    const delta = result.delta && Math.abs(result.delta) > 1 ? ` (${decorateDelta(result.delta)})` : '';
+    const delta = result.delta && Math.abs(result.delta) > 1
+      ? ` (${decorateDelta(result.delta)})`
+      : '';
     return `
 ${name.replace('.json', '')}
 ${total} ${delta}

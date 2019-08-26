@@ -1,65 +1,69 @@
 {
-  "name": "size-plugin-bot",
-  "version": "1.0.0",
-  "description": "A Github bot for size-plugin",
-  "author": "kuldeepkeshwar <kuldeepkeshwar@gmail.com>",
-  "license": "ISC",
-  "repository": "https://github.com/kuldeepkeshwar/size-plugin-bot.git",
-  "homepage": "https://github.com/kuldeepkeshwar/size-plugin-bot",
-  "bugs": "https://github.com/kuldeepkeshwar/size-plugin-bot/issues",
-  "keywords": [
-    "size-plugin",
-    "size-plugin-bot"
-  ],
-  "scripts": {
-    "dev": "nodemon",
-    "start": "probot run ./src/index.js",
-    "lint": "standard --fix",
-    "test": "jest && standard",
-    "test:watch": "jest --watch --notify --notifyMode=change --coverage"
-  },
-  "dependencies": {
-    "axios": "^0.19.0",
-    "emojis-list": "^3.0.0",
-    "fs-extra": "^8.0.1",
-    "pretty-bytes": "^5.2.0",
-    "probot": "^9.2.20",
-    "probot-config": "^1.1.0"
-  },
-  "devDependencies": {
-    "dotenv": "^8.0.0",
-    "eslint": "^5.16.0",
-    "eslint-config-airbnb-base": "^13.2.0",
-    "eslint-plugin-import": "^2.18.0",
-    "execa": "^1.0.0",
-    "jest": "^24.0.0",
-    "nock": "^10.0.0",
-    "nodemon": "^1.17.2",
-    "smee-client": "^1.0.2",
-    "standard": "^12.0.1"
-  },
-  "engines": {
-    "node": ">= 8.3.0"
-  },
-  "standard": {
-    "env": [
-      "jest"
-    ]
-  },
-  "prettier": {
-    "singleQuote": true,
-    "trailingComma": "none",
-    "useTabs": true,
-    "tabWidth": 2
-  },
-  "nodemonConfig": {
-    "exec": "npm start",
-    "watch": [
-      ".env",
-      "."
-    ]
-  },
-  "jest": {
-    "testEnvironment": "node"
-  }
+    "name": "size-plugin-bot",
+    "version": "1.0.0",
+    "description": "A Github bot for size-plugin",
+    "author": "kuldeepkeshwar <kuldeepkeshwar@gmail.com>",
+    "license": "ISC",
+    "repository": "https://github.com/kuldeepkeshwar/size-plugin-bot.git",
+    "homepage": "https://github.com/kuldeepkeshwar/size-plugin-bot",
+    "bugs": "https://github.com/kuldeepkeshwar/size-plugin-bot/issues",
+    "keywords": [
+        "size-plugin",
+        "size-plugin-bot"
+    ],
+    "scripts": {
+        "dev": "nodemon",
+        "start": "probot run ./src/index.js",
+        "lint": "eslint src --fix",
+        "format": "prettier --write '**/*.{js,scss,jsx,md}'",
+        "test": "jest",
+        "test:watch": "jest --watch --notify --notifyMode=change --coverage"
+    },
+    "dependencies": {
+        "axios": "^0.19.0",
+        "emojis-list": "^3.0.0",
+        "fs-extra": "^8.0.1",
+        "pretty-bytes": "^5.2.0",
+        "probot": "^9.2.20",
+        "probot-config": "^1.1.0"
+    },
+    "devDependencies": {
+        "dotenv": "^8.0.0",
+        "eslint": "^5.16.0",
+        "eslint-config-airbnb-base": "^13.2.0",
+        "eslint-plugin-import": "^2.18.0",
+        "execa": "^1.0.0",
+        "jest": "^24.0.0",
+        "lint-staged": "^9.2.4",
+        "nock": "^10.0.0",
+        "nodemon": "^1.17.2",
+        "prettier": "^1.18.2",
+        "smee-client": "^1.0.2"
+    },
+    "engines": {
+        "node": ">= 8.3.0"
+    },
+    "lint-staged": {
+        "linters": {
+            "*.{js,jsx}": [
+                "eslint --fix",
+                "prettier --write",
+                "git add"
+            ]
+        },
+        "ignore": [
+            "**/dist/*",
+            "**/public/*"
+        ]
+    },
+    "nodemonConfig": {
+        "exec": "npm start",
+        "watch": [
+            ".env",
+            "."
+        ]
+    },
+    "jest": {
+        "testEnvironment": "node"
+    }
 }

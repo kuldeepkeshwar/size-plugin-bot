@@ -2,7 +2,10 @@ const { MAX_RETRY, RETRY_INTERVAL } = require('./../config');
 
 function logError(error) {
   if (error.response) {
-    console.error({ data: error.response.data, status: error.response.status });
+    console.error({
+      data: error.response.data,
+      status: error.response.status,
+    });
   } else if (error.request) {
     console.error(error.request);
   } else {
