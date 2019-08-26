@@ -19,7 +19,8 @@ async function get(context) {
     const {
       ref,
       repository: { name, full_name: repo, owner },
-      after: sha,head_commit,
+      after: sha,
+      head_commit,
       commits,
     } = context.payload;
     const branch = ref.replace('refs/heads/', '');
@@ -40,7 +41,10 @@ async function get(context) {
             let counter = 0;
             for (const filename of Object.keys(sizeFileNameMap)) {
               if (sizeMap[filename]) {
-                files.push({ filename, content: sizeMap[filename].size });
+                files.push({
+                  filename,
+                  content: sizeMap[filename].size,
+                });
                 sizeFileNameMap[filename].commented = true;
                 counter += 1;
               }
@@ -50,18 +54,30 @@ async function get(context) {
               throw Error('waiting for all file sizes');
             }
           } else {
-            files.push(...Object.values(data).map(({ filename, size }) => ({ filename, content: size })));
+            files.push(
+              ...Object.values(data).map(({ filename, size }) => ({
+                filename,
+                content: size,
+              })),
+            );
           }
         }));
       } catch (error) {
         console.error(error);
-	  }
-	  const title=`${emoji.random().join(' ')} update sizes`;
-	  const body=`👇 
-${head_commit.message ||''}`
+      }
+      const title = `${emoji.random().join(' ')} update sizes`;
+      const body = `👇 
+${head_commit.message || ''}`;
       await createPullRequest(context.github, {
-        owner: owner.name, repo: name, base: 'master', head: `size-plugin-${Date.now()}`, title ,body, files,
+        owner: owner.name,
+        repo: name,
+        base: 'master',
+        head: `size-plugin-${Date.now()}`,
+        title,
+        body,
+        files,
       });
+      await createReviewRequest(context.github, { owner: owner.name, repo: name });
     }
   } catch (err) {
     console.error(err);

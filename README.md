@@ -1,5 +1,5 @@
-
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors)
+
 <p align="center">
   <img src="https://github.com/kuldeepkeshwar/size-plugin-bot/blob/master/static/images/icon.png?raw=true" alt="size-plugin" >
 </p>
@@ -7,12 +7,12 @@
   <h1 align="center">size-plugin</h1>
 </p>
 
-
 > A GitHub 🤖 built with Probot that helps you to keep an 👁️ on static assert 📦 sizes of your application and gives instant feedback 📝 for developer whenever they make change.
 
 ##### 🤖 comments the gzipped sizes of your webpack assets and the changes since the last build into the relevant PR
 
 ## Usage
+
 First add an instance of the [size-plugin](https://github.com/GoogleChromeLabs/size-plugin) to your webpack configuration:
 
 ```diff
@@ -26,7 +26,7 @@ module.exports = {
 }
 ```
 
-Second Simply [install the app](https://github.com/apps/size-plugin) and make some changes, open a pr and  watch the magic happen 😊
+Second Simply [install the app](https://github.com/apps/size-plugin) and make some changes, open a pr and watch the magic happen 😊
 
 <p align="center">
   <img src="https://github.com/kuldeepkeshwar/size-plugin-bot/blob/master/static/images/sample.png?raw=true" alt="size-plugin commenting on a PR with bundle stats" width="760">
@@ -34,8 +34,7 @@ Second Simply [install the app](https://github.com/apps/size-plugin) and make so
 
 Currently works with [Travis CI](https://travis-ci.org), [CircleCI](https://circleci.com/), [Wercker](http://www.wercker.com), and [Drone](http://readme.drone.io/).
 
-Using a different CI? Under the hood, [size-plugin](https://github.com/GoogleChromeLabs/size-plugin) uses [ci-env](https://github.com/siddharthkp/ci-env) to extract meta information which works perfectly with Custom CI  🙃
-
+Using a different CI? Under the hood, [size-plugin](https://github.com/GoogleChromeLabs/size-plugin) uses [ci-env](https://github.com/siddharthkp/ci-env) to extract meta information which works perfectly with Custom CI 🙃
 
 ## Contributing
 
@@ -48,6 +47,7 @@ For more, check out the [Contributing Guide](CONTRIBUTING.md).
 ⭐️ this repo
 
 &nbsp;
+
 ## License
 
 [ISC](LICENSE) © 2019 kuldeepkeshwar <kuldeepkeshwar@gmail.com>

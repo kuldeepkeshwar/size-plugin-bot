@@ -10,7 +10,11 @@ function toMap(arr, propertyname) {
 }
 async function getFileFromConfig(context) {
   const botConfig = await getConfig(context, 'size-plugin.yml');
-  const sizefilepaths = botConfig && botConfig['size-files'].map(filename => ({ filename, commented: false }));
+  const sizefilepaths = botConfig
+        && botConfig['size-files'].map(filename => ({
+          filename,
+          commented: false,
+        }));
   return sizefilepaths;
 }
 module.exports = { toMap, getFileFromConfig };
