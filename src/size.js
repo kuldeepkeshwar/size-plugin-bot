@@ -66,7 +66,7 @@ async function fetchSizes(context, params) {
 
 async function cleanUp(context, owner, name, number) {
   // close stale pull request
-
+  console.log('cleaning stale pr');
   const allPullRequests = await listPullRequest(context.github, {
     owner: owner.name,
     repo: name,
@@ -83,6 +83,8 @@ async function cleanUp(context, owner, name, number) {
     }
     return false;
   });
+  console.log('pr to close ', pullRequestsByBot.length);
+
   pullRequestsByBot.forEach(pr => updatePullRequest(context.github, {
     owner: owner.name,
     repo: name,
