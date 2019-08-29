@@ -8,7 +8,7 @@ function register(app) {
     setTimeout(size.get, 0, context);
   });
   app.on(
-    ['pull_request.opened', 'pull_request.synchronize'],
+    ['pull_request.opened', 'pull_request.synchronize', 'pull_request.reopened'],
     async (context) => {
       setTimeout(diff.get, 0, context);
     },

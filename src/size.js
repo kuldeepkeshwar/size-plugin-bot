@@ -7,11 +7,18 @@
 const axios = require('axios');
 const emoji = require('./utils/emoji');
 const { toMap, getFileFromConfig } = require('./utils/utils');
-const { isCommitedByMe, createPullRequest, createReviewRequest } = require('./utils/github');
-const { SIZE_STORE_ENDPOINT, STAR_REPO_MESSAGE } = require('./config');
+const {
+  isCommitedByMe,
+  createPullRequest,
+  createReviewRequest,
+  updatePullRequest,
+  listPullRequest,
+} = require('./utils/github');
+const { SIZE_STORE_ENDPOINT, STAR_REPO_MESSAGE, BOT } = require('./config');
 const { fetchWithRetry } = require('./utils/api');
 
 const url = `${SIZE_STORE_ENDPOINT}/size`;
+const BASE_BRANCH = 'master';
 
 async function fetchSizes(context, params) {
   const files = [];
@@ -22,7 +29,10 @@ async function fetchSizes(context, params) {
       const { data } = resp;
       const values = Object.values(data);
       if (sizefilepaths) {
-        const sizeFileNameMap = toMap(sizefilepaths.filter(item => !item.commented), 'filename');
+        const sizeFileNameMap = toMap(
+          sizefilepaths.filter(item => !item.commented),
+          'filename',
+        );
         const sizeMap = toMap(values, 'filename');
         let counter = 0;
         for (const filename of Object.keys(sizeFileNameMap)) {
@@ -53,6 +63,35 @@ async function fetchSizes(context, params) {
   }
   return files;
 }
+
+async function cleanUp(context, owner, name, number) {
+  // close stale pull request
+
+  const allPullRequests = await listPullRequest(context.github, {
+    owner: owner.name,
+    repo: name,
+    state: 'open',
+    base: BASE_BRANCH,
+  });
+  const pullRequestsByBot = allPullRequests.filter((pr) => {
+    const user = pr.user.login;
+    if (pr.number === number) {
+      return false;
+    }
+    if (BOT === user) {
+      return true;
+    }
+    return false;
+  });
+  pullRequestsByBot.forEach(pr => updatePullRequest(context.github, {
+    owner: owner.name,
+    repo: name,
+    pull_number: pr.number,
+    state: 'closed',
+  })
+    .then(({ html_url }) => console.log('closed : ', html_url))
+    .catch(console.error));
+}
 // eslint-disable-next-line consistent-return
 async function get(context) {
   try {
@@ -64,7 +103,7 @@ async function get(context) {
       commits,
     } = context.payload;
     const branch = ref.replace('refs/heads/', '');
-    if (branch === 'master' && !isCommitedByMe(commits)) {
+    if (branch === BASE_BRANCH && !isCommitedByMe(commits)) {
       const params = { repo, branch, sha };
       const files = await fetchSizes(context, params);
       if (files.length) {
@@ -76,7 +115,7 @@ ${STAR_REPO_MESSAGE}
         const { number } = await createPullRequest(context.github, {
           owner: owner.name,
           repo: name,
-          base: 'master',
+          base: BASE_BRANCH,
           head: `size-plugin-${Date.now()}`,
           title,
           body,
@@ -88,6 +127,7 @@ ${STAR_REPO_MESSAGE}
           pull_number: number,
           reviewers: commits.map(({ author: { username } }) => username),
         });
+        await cleanUp(context, owner, name, number);
       }
     }
   } catch (err) {
