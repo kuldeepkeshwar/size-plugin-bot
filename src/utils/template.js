@@ -44,13 +44,8 @@ function decorateHeading(name, files) {
     );
 
     const total = `Overall size: ${prettyBytes(result.total)}`;
-    const delta = result.delta && Math.abs(result.delta) > 1
-      ? ` (${decorateDelta(result.delta)})`
-      : '';
-    return `
-${name.replace('.json', '')}
-${total} ${delta}
-`;
+    const delta = result.delta && Math.abs(result.delta) > 1 ? ` (${decorateDelta(result.delta)})` : '';
+    return `${name.replace('.json', '')} ${total} ${delta}`;
   } catch (err) {
     console.log(err);
   }

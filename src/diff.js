@@ -10,50 +10,47 @@ const { fetchWithRetry } = require('./utils/api');
 const { isPullRequestOpenedByMe } = require('./utils/github');
 
 const url = `${SIZE_STORE_ENDPOINT}/diff`;
+
 async function commentPullRequest(context, message) {
   const issueComment = context.issue({ body: message });
   context.github.issues.createComment(issueComment);
   // return 'commented successfully';
 }
-
-function commentMessageTemplate(item) {
+function sizeCommentTemplate(item) {
   const {
     filename,
     diff: { files },
   } = item;
-  return `
+  return `  
 ${decorateHeading(filename, files)}
 
 \`\`\`
 ${decorateComment(files)}
 \`\`\`
+  `;
+}
+function commentMessageTemplate(item, sha) {
+  return `
+Size report for the changes in this PR:
+${sizeCommentTemplate(item)}
 
+commit: ${sha}
 `;
 }
-function combinedCommentMessageTemplate(items) {
-  return items.length === 1
-    ? `
-${decorateHeading('', items[0].diff.files)}
+function combinedCommentMessageTemplate(items, sha) {
+  const sizes = items.reduce(
+    (agg, item) => `${agg}
+${sizeCommentTemplate(item)}
+`,
+    '',
+  );
 
-\`\`\`
-${decorateComment(items[0].diff.files)}
-\`\`\`
-`
-    : items.reduce((agg, item) => {
-      const {
-        filename,
-        diff: { files },
-      } = item;
-      return `${agg}
+  return `
+Size report for the changes in this PR: 
+${sizes}
 
-${decorateHeading(filename, files)}
-
-\`\`\`
-${decorateComment(files)}
-\`\`\`
-
-`;
-    }, '');
+commit: ${sha} 
+  `;
 }
 // eslint-disable-next-line consistent-return
 async function get(context) {
@@ -89,9 +86,7 @@ async function get(context) {
             let counter = 0;
             for (const filename of Object.keys(sizeFileNameMap)) {
               if (sizeMap[filename]) {
-                const message = commentMessageTemplate(
-                  sizeMap[filename],
-                );
+                const message = commentMessageTemplate(sizeMap[filename], sha);
                 commentPullRequest(context, message).then(
                   console.log,
                   console.error,
@@ -105,11 +100,8 @@ async function get(context) {
               throw Error('waiting for all file sizes');
             }
           } else {
-            const message = combinedCommentMessageTemplate(values);
-            commentPullRequest(context, message).then(
-              console.log,
-              console.error,
-            );
+            const message = combinedCommentMessageTemplate(values, sha);
+            commentPullRequest(context, message).then(console.log, console.error);
           }
         });
       });
