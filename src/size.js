@@ -6,9 +6,10 @@
 
 const axios = require('axios');
 const emoji = require('./utils/emoji');
-const { toMap, getFileFromConfig } = require('./utils/utils');
+const { toMap, getBotConfig } = require('./utils/utils');
 const {
   isCommitedByMe,
+  updateFile,
   createPullRequest,
   createReviewRequest,
   updatePullRequest,
@@ -18,17 +19,14 @@ const { SIZE_STORE_ENDPOINT, STAR_REPO_MESSAGE, BOT } = require('./config');
 const { fetchWithRetry } = require('./utils/api');
 
 const url = `${SIZE_STORE_ENDPOINT}/size`;
-const BASE_BRANCH = 'master';
 
-async function fetchSizes(context, params) {
+async function fetchSizes(params, sizefilepaths) {
   const files = [];
   try {
-    const sizefilepaths = await getFileFromConfig(context);
-
     await fetchWithRetry(() => axios.get(url, { params }).then((resp) => {
       const { data } = resp;
       const values = Object.values(data);
-      if (sizefilepaths) {
+      if (sizefilepaths.length > 1) {
         const sizeFileNameMap = toMap(
           sizefilepaths.filter(item => !item.commented),
           'filename',
@@ -64,17 +62,20 @@ async function fetchSizes(context, params) {
   return files;
 }
 
-async function cleanUp(context, owner, name, number) {
+async function cleanUp(context, owner, repo, branch, number) {
   // close stale pull request
   console.log('cleaning stale pr');
   const allPullRequests = await listPullRequest(context.github, {
     owner: owner.name,
-    repo: name,
+    repo,
     state: 'open',
-    base: BASE_BRANCH,
   });
   const pullRequestsByBot = allPullRequests.filter((pr) => {
     const user = pr.user.login;
+    const base = pr.base.ref;
+    if (base !== branch) {
+      return false;
+    }
     if (pr.number === number) {
       return false;
     }
@@ -87,7 +88,7 @@ async function cleanUp(context, owner, name, number) {
 
   pullRequestsByBot.forEach(pr => updatePullRequest(context.github, {
     owner: owner.name,
-    repo: name,
+    repo,
     pull_number: pr.number,
     state: 'closed',
   })
@@ -105,31 +106,48 @@ async function get(context) {
       commits,
     } = context.payload;
     const branch = ref.replace('refs/heads/', '');
-    if (branch === BASE_BRANCH && !isCommitedByMe(commits)) {
+    const config = await getBotConfig(context);
+    const baseBranches = config['base-branches'];
+    const sizefilepaths = config['size-files'].map(filename => ({
+      filename,
+      commented: false,
+    }));
+    if (baseBranches.includes(branch) && !isCommitedByMe(commits)) {
       const params = { repo, branch, sha };
-      const files = await fetchSizes(context, params);
+      const files = await fetchSizes(params, sizefilepaths);
       if (files.length) {
-        const title = `${emoji.random().join(' ')} update sizes`;
-        const body = `👇 
+        try {
+          for (const file of files) {
+            await updateFile(context.github, {
+              owner: owner.name,
+              repo: name,
+              base: branch,
+              file,
+            });
+          }
+        } catch (err) {
+          const title = `${emoji.random().join(' ')} update sizes`;
+          const body = `👇 
 ${head_commit.id} : ${head_commit.message || ''}
 ${STAR_REPO_MESSAGE}
 `;
-        const { number } = await createPullRequest(context.github, {
-          owner: owner.name,
-          repo: name,
-          base: BASE_BRANCH,
-          head: `size-plugin-${Date.now()}`,
-          title,
-          body,
-          files,
-        });
-        await createReviewRequest(context.github, {
-          owner: owner.name,
-          repo: name,
-          pull_number: number,
-          reviewers: commits.map(({ author: { username } }) => username),
-        });
-        await cleanUp(context, owner, name, number);
+          const { number } = await createPullRequest(context.github, {
+            owner: owner.name,
+            repo: name,
+            base: branch,
+            head: `size-plugin-${Date.now()}`,
+            title,
+            body,
+            files,
+          });
+          await createReviewRequest(context.github, {
+            owner: owner.name,
+            repo: name,
+            pull_number: number,
+            reviewers: commits.map(({ author: { username } }) => username),
+          });
+          await cleanUp(context, owner, name, branch, number);
+        }
       }
     }
   } catch (err) {

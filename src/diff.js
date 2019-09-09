@@ -3,7 +3,7 @@
 /* eslint-disable no-console */
 
 const axios = require('axios');
-const { toMap, getFileFromConfig } = require('./utils/utils');
+const { toMap, getBotConfig } = require('./utils/utils');
 const { SIZE_STORE_ENDPOINT } = require('./config');
 const { decorateComment, decorateHeading } = require('./utils/template');
 const { fetchWithRetry } = require('./utils/api');
@@ -66,7 +66,11 @@ async function get(context) {
       repository: { full_name: repo },
     } = context.payload;
     if (!isPullRequestOpenedByMe(user)) {
-      const sizefilepaths = await getFileFromConfig(context);
+      const config = await getBotConfig(context);
+      const sizefilepaths = config['size-files'].map(filename => ({
+        filename,
+        commented: false,
+      }));
 
       await fetchWithRetry(() => {
         const params = {
@@ -77,7 +81,7 @@ async function get(context) {
         };
         return axios.get(url, { params }).then(({ data }) => {
           const values = Object.values(data);
-          if (sizefilepaths) {
+          if (sizefilepaths.length > 1) {
             const sizeFileNameMap = toMap(
               sizefilepaths.filter(item => !item.commented),
               'filename',

@@ -4,6 +4,8 @@
 /* eslint-disable no-restricted-syntax */
 const { BOT } = require('./../config');
 
+const emoji = require('./emoji');
+
 async function createBranch(github, {
   owner, repo, base = 'master', branch,
 }) {
@@ -56,7 +58,7 @@ async function updateFile(github, {
       repo,
       branch,
       path: filename,
-      message: `update ${filename} 👍`,
+      message: `${emoji.random().join(' ')} update ${filename} 👍`,
       content: data,
       sha: oldFile.sha,
     });
@@ -66,7 +68,7 @@ async function updateFile(github, {
       repo,
       branch,
       path: filename,
-      message: `create ${filename} 👍`,
+      message: `${emoji.random().join(' ')} create ${filename} 👍`,
       content: data,
     });
   }
@@ -113,15 +115,20 @@ async function createReviewRequest(github, {
     reviewers,
   });
 }
-async function listPullRequest(github, {
-  owner, repo, state, head, base,
-}) {
+async function listPullRequest(
+  github,
+  {
+    owner,
+    repo,
+    state, // head, base,
+  },
+) {
   const { data } = await github.pulls.list({
     owner,
     repo,
     state,
-    head,
-    base,
+    // head,
+    // base,
   });
   return data;
 }
