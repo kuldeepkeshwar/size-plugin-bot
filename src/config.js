@@ -1,7 +1,7 @@
 const MAX_RETRY = 20;
 const RETRY_INTERVAL = 30 * 1000;
 
-const SIZE_STORE_ENDPOINT = process.env.SIZE_STORE_ENDPOINT || 'https://size-plugin-store.now.sh';
+const SIZE_STORE_ENDPOINT = process.env.SIZE_STORE_ENDPOINT || 'https://size-store.now.sh';
 
 const BOT = 'size-plugin[bot]';
 

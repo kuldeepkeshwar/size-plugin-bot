@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable no-param-reassign */
 /* eslint-disable consistent-return */
 /* eslint-disable no-nested-ternary */
@@ -44,13 +45,8 @@ function decorateHeading(name, files) {
     );
 
     const total = `Overall size: ${prettyBytes(result.total)}`;
-    const delta = result.delta && Math.abs(result.delta) > 1
-      ? ` (${decorateDelta(result.delta)})`
-      : '';
-    return `
-${name.replace('.json', '')}
-${total} ${delta}
-`;
+    const delta = result.delta && Math.abs(result.delta) > 1 ? ` (${decorateDelta(result.delta)})` : '';
+    return `${name.replace('.json', '')} ${total} ${delta}`;
   } catch (err) {
     console.log(err);
   }
@@ -60,12 +56,15 @@ function decorateComment(files) {
   let output = '';
   // eslint-disable-next-line no-restricted-syntax
   for (const file of files) {
-    const { filename: name, size, diff: delta } = file;
+    const {
+      filename: name, size, diff, delta,
+    } = file;
+    const _delta = diff || delta;
     const msg = `${new Array(width - name.length + 2).join(' ') + name} ⏤  `;
     const color = getColorCode(size);
     let sizeText = colorText(color, prettyBytes(size));
-    if (delta && Math.abs(delta) > 1) {
-      sizeText += ` (${decorateDelta(delta)})`;
+    if (_delta && Math.abs(_delta) > 1) {
+      sizeText += ` (${decorateDelta(_delta)})`;
     }
     const text = `${msg + sizeText}\n`;
     output += text;
