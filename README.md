@@ -36,6 +36,21 @@ Currently works with [Travis CI](https://travis-ci.org), [CircleCI](https://circ
 
 Using a different CI? Under the hood, [size-plugin](https://github.com/GoogleChromeLabs/size-plugin) uses [ci-env](https://github.com/siddharthkp/ci-env) to extract meta information which works perfectly with Custom CI 🙃
 
+## Configure Bot
+
+Create a file `.github/size-plugin.yml`.
+
+example 👇
+
+```yml
+size-files: # list of size*.json files incase you have multiple packages.
+    - size-plugin-browser.json
+    - size-plugin-ssr.json
+base-branches: # base branches against which bot can open a pull request.
+    - master
+    - next
+```
+
 ## Contributing
 
 If you have suggestions for how size-plugin could be improved, or want to report a bug, open an issue! We'd love all and any contributions.
