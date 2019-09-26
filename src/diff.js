@@ -63,8 +63,9 @@ async function get(context) {
       },
     } = context.payload;
     const {
-      repository: { full_name: repo },
+      repository: { full_name },
     } = context.payload;
+    const repo = full_name.toLowerCase();
     if (!isPullRequestOpenedByMe(user)) {
       const config = await getBotConfig(context);
       const sizefilepaths = config['size-files'].map(filename => ({

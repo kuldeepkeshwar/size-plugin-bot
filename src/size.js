@@ -100,11 +100,13 @@ async function get(context) {
   try {
     const {
       ref,
-      repository: { name, full_name: repo, owner },
+      repository: { name, full_name, owner },
       after: sha,
       head_commit,
       commits,
     } = context.payload;
+    
+    const repo = full_name.toLowerCase();
     const branch = ref.replace('refs/heads/', '');
     const config = await getBotConfig(context);
     const baseBranches = config['base-branches'];
