@@ -2,12 +2,12 @@
 /* eslint-disable camelcase */
 /* eslint-disable no-console */
 
-const axios = require('axios');
-const { toMap, getBotConfig } = require('./utils/utils');
-const { SIZE_STORE_ENDPOINT } = require('./config');
-const { decorateComment, decorateHeading } = require('./utils/template');
-const { fetchWithRetry } = require('./utils/api');
-const { isPullRequestOpenedByMe } = require('./utils/github');
+const axios = require("axios");
+const { toMap, getBotConfig } = require("./utils/utils");
+const { SIZE_STORE_ENDPOINT } = require("./config");
+const { decorateComment, decorateHeading } = require("./utils/template");
+const { fetchWithRetry } = require("./utils/api");
+const { isPullRequestOpenedByMe } = require("./utils/github");
 
 const url = `${SIZE_STORE_ENDPOINT}/diff`;
 
@@ -19,7 +19,7 @@ async function commentPullRequest(context, message) {
 function sizeCommentTemplate(item) {
   const {
     filename,
-    diff: { files },
+    diff: { files }
   } = item;
   return `  
 ${decorateHeading(filename, files)}
@@ -42,7 +42,7 @@ function combinedCommentMessageTemplate(items, sha) {
     (agg, item) => `${agg}
 ${sizeCommentTemplate(item)}
 `,
-    '',
+    ""
   );
 
   return `
@@ -58,43 +58,42 @@ async function get(context) {
     const {
       pull_request: {
         number: pull_request_number,
-        head: { ref: branch, sha },
-        user,
-      },
+        head: { sha },
+        user
+      }
     } = context.payload;
     const {
-      repository: { full_name },
+      repository: { full_name }
     } = context.payload;
     const repo = full_name.toLowerCase();
     if (!isPullRequestOpenedByMe(user)) {
       const config = await getBotConfig(context);
-      const sizefilepaths = config['size-files'].map(filename => ({
+      const sizefilepaths = config["size-files"].map(filename => ({
         filename,
-        commented: false,
+        commented: false
       }));
 
       await fetchWithRetry(() => {
         const params = {
           repo,
-          branch,
           sha,
-          pull_request_number,
+          pull_request_number
         };
         return axios.get(url, { params }).then(({ data }) => {
           const values = Object.values(data);
           if (sizefilepaths.length > 1) {
             const sizeFileNameMap = toMap(
               sizefilepaths.filter(item => !item.commented),
-              'filename',
+              "filename"
             );
-            const sizeMap = toMap(values, 'filename');
+            const sizeMap = toMap(values, "filename");
             let counter = 0;
             for (const filename of Object.keys(sizeFileNameMap)) {
               if (sizeMap[filename]) {
                 const message = commentMessageTemplate(sizeMap[filename], sha);
                 commentPullRequest(context, message).then(
                   console.log,
-                  console.error,
+                  console.error
                 );
                 sizeFileNameMap[filename].commented = true;
                 counter += 1;
@@ -102,11 +101,14 @@ async function get(context) {
             }
             if (counter !== Object.values(sizeFileNameMap).length) {
               console.log(Object.values(sizeFileNameMap));
-              throw Error('waiting for all file sizes');
+              throw Error("waiting for all file sizes");
             }
           } else {
             const message = combinedCommentMessageTemplate(values, sha);
-            commentPullRequest(context, message).then(console.log, console.error);
+            commentPullRequest(context, message).then(
+              console.log,
+              console.error
+            );
           }
         });
       });

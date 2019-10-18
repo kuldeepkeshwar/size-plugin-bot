@@ -1,15 +1,15 @@
-const { MAX_RETRY, RETRY_INTERVAL } = require('./../config');
+const { MAX_RETRY, RETRY_INTERVAL } = require("./../config");
 
 function logError(error) {
   if (error.response) {
     console.error({
       data: error.response.data,
-      status: error.response.status,
+      status: error.response.status
     });
   } else if (error.request) {
     console.error(error.request);
   } else {
-    console.error('Error', error.message);
+    console.error("Error", error.message);
   }
 }
 function parseError(error) {
@@ -21,7 +21,7 @@ function parseError(error) {
 
 function fetchWithRetry(
   makeRequest,
-  options = { max: MAX_RETRY, interval: RETRY_INTERVAL },
+  options = { max: MAX_RETRY, interval: RETRY_INTERVAL }
 ) {
   return new Promise((resolve, reject) => {
     let retry = 0;
@@ -40,7 +40,7 @@ function fetchWithRetry(
             reject(parseError(error));
           }
         }
-      }());
+      })();
     }, options.interval);
   });
 }
