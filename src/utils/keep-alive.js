@@ -1,10 +1,10 @@
-const http = require("http");
+const http = require('http');
 
 function createOptions(options) {
   const opt = {
-    path: options.path || "/_keepalive",
+    path: options.path || '/_keepalive',
     delay: options.delay || 3,
-    handler: options.handler
+    handler: options.handler,
   };
   opt.url = `http://${process.env.PROJECT_DOMAIN}.glitch.me${opt.path}`;
   return opt;
