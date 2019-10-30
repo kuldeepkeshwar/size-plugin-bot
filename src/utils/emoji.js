@@ -1,4 +1,4 @@
-const list = require("emojis-list");
+const list = require('emojis-list');
 
 const total = list.length;
 

@@ -1,4 +1,4 @@
-const getConfig = require("probot-config");
+const getConfig = require('probot-config');
 
 function toMap(arr, propertyname) {
   return arr.reduce((agg, item) => {
@@ -9,20 +9,12 @@ function toMap(arr, propertyname) {
   }, {});
 }
 async function getBotConfig(context) {
-  const botConfig = await getConfig(context, "size-plugin.yml");
+  const botConfig = await getConfig(context, 'size-plugin.yml');
   return {
-    "size-files": ["size-plugin.json"],
-    "base-branches": ["master"],
-    ...botConfig
+    'size-files': ['size-plugin.json'],
+    'base-branches': ['master'],
+    ...botConfig,
   };
 }
 
-async function getFileFromConfig(context) {
-  const botConfig = await getBotConfig(context);
-  const sizefilepaths = botConfig["size-files"].map(filename => ({
-    filename,
-    commented: false
-  }));
-  return sizefilepaths;
-}
 module.exports = { toMap, getBotConfig };

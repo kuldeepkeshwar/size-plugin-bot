@@ -2,24 +2,57 @@
 /* eslint-disable camelcase */
 /* eslint-disable no-console */
 
-const axios = require("axios");
-const { toMap, getBotConfig } = require("./utils/utils");
-const { SIZE_STORE_ENDPOINT } = require("./config");
-const { decorateComment, decorateHeading } = require("./utils/template");
-const { fetchWithRetry } = require("./utils/api");
-const { isPullRequestOpenedByMe } = require("./utils/github");
+const axios = require('axios');
+const GithubDb = require('simple-github-db');
+const { getBotConfig } = require('./utils/utils');
+const { SIZE_STORE_ENDPOINT } = require('./config');
+const { decorateComment, decorateHeading } = require('./utils/template');
+const { fetchWithRetry } = require('./utils/api');
+const { isPullRequestOpenedByMe } = require('./utils/github');
 
 const url = `${SIZE_STORE_ENDPOINT}/diff`;
+const Database = GithubDb({ db: process.env.DATABASE_NAME, token: process.env.DATABASE_TOKEN });
+const DOCUMENT = 'pull_requests';
 
-async function commentPullRequest(context, message) {
-  const issueComment = context.issue({ body: message });
-  context.github.issues.createComment(issueComment);
-  // return 'commented successfully';
+function createIdentifier(repo) {
+  return `${repo}`;
+}
+
+async function commentPullRequest(context, fullRepositoryName, pull_request_number, body) {
+  const identifier = createIdentifier(fullRepositoryName);
+  try {
+    const pullRequestMap = await Database.fetchOne({ document: DOCUMENT, identifier });
+    const comment_id = pullRequestMap[pull_request_number];
+    if (comment_id) {
+      const [owner, repo] = fullRepositoryName.split('/');
+      await context.github.issues.updateComment({
+        owner,
+        repo,
+        comment_id,
+        body,
+      });
+    } else {
+      const issueComment = context.issue({ body });
+      const {
+        data: { id },
+      } = await context.github.issues.createComment(issueComment);
+      await Database.update(
+        { document: DOCUMENT, identifier },
+        { ...pullRequestMap, [pull_request_number]: id },
+      );
+    }
+  } catch (error) {
+    const issueComment = context.issue({ body });
+    const {
+      data: { id },
+    } = await context.github.issues.createComment(issueComment);
+    await Database.add({ document: DOCUMENT, identifier }, { [pull_request_number]: id });
+  }
 }
 function sizeCommentTemplate(item) {
   const {
     filename,
-    diff: { files }
+    diff: { files },
   } = item;
   return `  
 ${decorateHeading(filename, files)}
@@ -29,20 +62,12 @@ ${decorateComment(files)}
 \`\`\`
   `;
 }
-function commentMessageTemplate(item, sha) {
-  return `
-Size report for the changes in this PR:
-${sizeCommentTemplate(item)}
-
-commit: ${sha}
-`;
-}
 function combinedCommentMessageTemplate(items, sha) {
   const sizes = items.reduce(
     (agg, item) => `${agg}
 ${sizeCommentTemplate(item)}
 `,
-    ""
+    '',
   );
 
   return `
@@ -52,6 +77,25 @@ ${sizes}
 commit: ${sha} 
   `;
 }
+
+async function fetchSizes(repo, sha, pull_request_number, sizefiles) {
+  let sizes = null;
+  await fetchWithRetry(() => {
+    const params = {
+      repo,
+      sha,
+      pull_request_number,
+    };
+    return axios.get(url, { params }).then(({ data }) => {
+      const values = Object.values(data);
+      sizes = values;
+      if (values.length < sizefiles.length) {
+        throw Error('waiting for all file sizes');
+      }
+    });
+  });
+  return sizes;
+}
 // eslint-disable-next-line consistent-return
 async function get(context) {
   try {
@@ -59,59 +103,28 @@ async function get(context) {
       pull_request: {
         number: pull_request_number,
         head: { sha },
-        user
-      }
+        user,
+      },
     } = context.payload;
     const {
-      repository: { full_name }
+      repository: { full_name },
     } = context.payload;
-    const repo = full_name.toLowerCase();
+    const fullRepositoryName = full_name.toLowerCase();
     if (!isPullRequestOpenedByMe(user)) {
       const config = await getBotConfig(context);
-      const sizefilepaths = config["size-files"].map(filename => ({
-        filename,
-        commented: false
-      }));
+      const sizefiles = config['size-files'];
 
-      await fetchWithRetry(() => {
-        const params = {
-          repo,
-          sha,
-          pull_request_number
-        };
-        return axios.get(url, { params }).then(({ data }) => {
-          const values = Object.values(data);
-          if (sizefilepaths.length > 1) {
-            const sizeFileNameMap = toMap(
-              sizefilepaths.filter(item => !item.commented),
-              "filename"
-            );
-            const sizeMap = toMap(values, "filename");
-            let counter = 0;
-            for (const filename of Object.keys(sizeFileNameMap)) {
-              if (sizeMap[filename]) {
-                const message = commentMessageTemplate(sizeMap[filename], sha);
-                commentPullRequest(context, message).then(
-                  console.log,
-                  console.error
-                );
-                sizeFileNameMap[filename].commented = true;
-                counter += 1;
-              }
-            }
-            if (counter !== Object.values(sizeFileNameMap).length) {
-              console.log(Object.values(sizeFileNameMap));
-              throw Error("waiting for all file sizes");
-            }
-          } else {
-            const message = combinedCommentMessageTemplate(values, sha);
-            commentPullRequest(context, message).then(
-              console.log,
-              console.error
-            );
-          }
-        });
-      });
+      context.log(`fetching sizes for: ${fullRepositoryName}/pull/${pull_request_number}`);
+      const sizes = await fetchSizes(fullRepositoryName, sha, pull_request_number, sizefiles);
+      const message = combinedCommentMessageTemplate(sizes, sha);
+      commentPullRequest(context, fullRepositoryName, pull_request_number, message).then(
+        () => {
+          context.log(
+            `commented sizes for: ${fullRepositoryName}/pull/${pull_request_number}`,
+          );
+        },
+        console.error,
+      );
     }
   } catch (err) {
     console.error(err);

@@ -2,56 +2,55 @@
 /* eslint-disable no-console */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-restricted-syntax */
-const { BOT } = require("./../config");
+const { BOT } = require('./../config');
 
-const emoji = require("./emoji");
+const emoji = require('./emoji');
 
-async function createBranch(github, { owner, repo, base = "master", branch }) {
+async function createBranch(github, {
+  owner, repo, base = 'master', branch,
+}) {
   const {
     data: {
-      object: { sha }
-    }
+      object: { sha },
+    },
   } = await github.git.getRef({
     owner,
     repo,
-    ref: `/heads/${base}`
+    ref: `/heads/${base}`,
   });
   await github.git.createRef({
     owner,
     repo,
     ref: `refs/heads/${branch}`,
-    sha
+    sha,
   });
 }
-async function getFile(github, { owner, repo, branch, filename }) {
+async function getFile(github, {
+  owner, repo, branch, filename,
+}) {
   try {
     const { data } = await github.repos.getContents({
       owner,
       repo,
       branch,
-      path: filename
+      path: filename,
     });
     return data;
   } catch (err) {
-    console.error(
-      "getFile:",
-      owner,
-      repo,
-      branch,
-      filename,
-      err.message || err.status
-    );
+    console.error('getFile:', owner, repo, branch, filename, err.message || err.status);
   }
   return null;
 }
-async function updateFile(github, { owner, repo, branch, file }) {
+async function updateFile(github, {
+  owner, repo, branch, file,
+}) {
   const { filename, content } = file;
-  const data = Buffer.from(JSON.stringify(content, null, 2)).toString("base64");
+  const data = Buffer.from(JSON.stringify(content, null, 2)).toString('base64');
   const oldFile = await getFile(github, {
     owner,
     repo,
     branch,
-    filename
+    filename,
   });
   if (oldFile && oldFile.content !== data) {
     await github.repos.createOrUpdateFile({
@@ -59,9 +58,9 @@ async function updateFile(github, { owner, repo, branch, file }) {
       repo,
       branch,
       path: filename,
-      message: `${emoji.random().join(" ")} update ${filename} 👍`,
+      message: `${emoji.random().join(' ')} update ${filename} 👍`,
       content: data,
-      sha: oldFile.sha
+      sha: oldFile.sha,
     });
   } else if (!oldFile) {
     await github.repos.createOrUpdateFile({
@@ -69,30 +68,29 @@ async function updateFile(github, { owner, repo, branch, file }) {
       repo,
       branch,
       path: filename,
-      message: `${emoji.random().join(" ")} create ${filename} 👍`,
-      content: data
+      message: `${emoji.random().join(' ')} create ${filename} 👍`,
+      content: data,
     });
   }
 }
-async function createPullRequest(
-  github,
-  { owner, repo, base, head, title, body, files }
-) {
-  console.log("create branch:", head);
+async function createPullRequest(github, {
+  owner, repo, base, head, title, body, files,
+}) {
+  console.log('create branch:', head);
 
   await createBranch(github, {
     owner,
     repo,
     base,
-    branch: head
+    branch: head,
   });
   for (const file of files) {
-    console.log("update file", head, file.filename);
+    console.log('update file', head, file.filename);
     await updateFile(github, {
       owner,
       repo,
       branch: head,
-      file
+      file,
     });
   }
   const { data } = await github.pulls.create({
@@ -101,21 +99,20 @@ async function createPullRequest(
     title,
     body,
     head,
-    base
+    base,
   });
-  console.log("opened pull request", data.number);
+  console.log('opened pull request', data.number);
   return data;
 }
-async function createReviewRequest(
-  github,
-  { owner, repo, pull_number, reviewers }
-) {
-  console.log("createReviewRequest", owner, repo, pull_number, reviewers);
+async function createReviewRequest(github, {
+  owner, repo, pull_number, reviewers,
+}) {
+  console.log('createReviewRequest', owner, repo, pull_number, reviewers);
   github.pulls.createReviewRequest({
     owner,
     repo,
     pull_number,
-    reviewers
+    reviewers,
   });
 }
 async function listPullRequest(
@@ -123,31 +120,33 @@ async function listPullRequest(
   {
     owner,
     repo,
-    state // head, base,
-  }
+    state, // head, base,
+  },
 ) {
   const { data } = await github.pulls.list({
     owner,
     repo,
-    state
+    state,
     // head,
     // base,
   });
   return data;
 }
-async function updatePullRequest(github, { owner, repo, pull_number, state }) {
+async function updatePullRequest(github, {
+  owner, repo, pull_number, state,
+}) {
   const { data } = await github.pulls.update({
     owner,
     repo,
     pull_number,
-    state
+    state,
   });
   return data;
 }
 function isCommitedByMe(commits = []) {
-  return !commits.some(commit => {
+  return !commits.some((commit) => {
     const {
-      author: { name }
+      author: { name },
     } = commit;
     if (name !== BOT) {
       return true;
@@ -167,5 +166,5 @@ module.exports = {
   createPullRequest,
   listPullRequest,
   updatePullRequest,
-  createBranch
+  createBranch,
 };
