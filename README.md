@@ -13,8 +13,8 @@
 
 ## Usage
 
-First add an instance of the [size-plugin](https://github.com/GoogleChromeLabs/size-plugin) to your webpack configuration:
-
+First add an instance of the [size-plugin](https://github.com/GoogleChromeLabs/size-plugin)  to your webpack configuration:
+> using rollup ? use [rollup-plugin-size](https://github.com/luwes/rollup-plugin-size)
 ```diff
 // webpack.config.js
 + const SizePlugin = require('size-plugin');
