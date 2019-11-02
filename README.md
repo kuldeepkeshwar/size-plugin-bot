@@ -13,8 +13,10 @@
 
 ## Usage
 
-First add an instance of the [size-plugin](https://github.com/GoogleChromeLabs/size-plugin)  to your webpack configuration:
+First add an instance of the [size-plugin](https://github.com/GoogleChromeLabs/size-plugin) to your webpack configuration:
+
 > using rollup ? use [rollup-plugin-size](https://github.com/luwes/rollup-plugin-size)
+
 ```diff
 // webpack.config.js
 + const SizePlugin = require('size-plugin');
@@ -43,13 +45,25 @@ Create a file `.github/size-plugin.yml`.
 example 👇
 
 ```yml
-size-files: # list of size*.json files incase you have multiple packages.
-    - size-plugin-browser.json
-    - size-plugin-ssr.json
 base-branches: # base branches against which bot can open a pull request.
     - master
     - next
+size-files: # list(string/object) of size*.json files
+    ## In case of multiple builds.
+    - sizes-browser.json
+    - sizes-server.json
+    ## In case of multiple packages in a single repo or mono repo
+    - dir: packages/a
+      filename: sizes-a.json
+    - dir: packages/b
+      filename: sizes-b.json
+    - dir: packages/c
+      filename: sizes-c-browser.json
+    - dir: packages/c
+      filename: sizes-c-server.json
 ```
+
+> Note: `filename` must be unique
 
 ## Contributing
 

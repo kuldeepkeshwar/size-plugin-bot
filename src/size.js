@@ -20,46 +20,42 @@ const { fetchWithRetry } = require('./utils/api');
 
 const url = `${SIZE_STORE_ENDPOINT}/size`;
 
-async function fetchSizes(params, sizefilepaths) {
-  const files = [];
+async function fetchSizes(params, sizefiles) {
+  const sizes = {};
+  const sizeFilePathMap = sizefiles.reduce((acc, item) => {
+    const { dir, filename = item } = item;
+    if (dir) {
+      acc[filename] = `${dir}/${filename}`;
+    } else {
+      acc[filename] = filename;
+    }
+    return acc;
+  }, {});
   try {
     await fetchWithRetry(() => axios.get(url, { params }).then((resp) => {
       const { data } = resp;
       const values = Object.values(data);
-      if (sizefilepaths.length > 1) {
-        const sizeFileNameMap = toMap(
-          sizefilepaths.filter(item => !item.commented),
-          'filename',
-        );
-        const sizeMap = toMap(values, 'filename');
-        let counter = 0;
-        for (const filename of Object.keys(sizeFileNameMap)) {
-          if (sizeMap[filename]) {
-            files.push({
-              filename,
-              content: sizeMap[filename].size,
-            });
-            sizeFileNameMap[filename].commented = true;
-            counter += 1;
-          }
-        }
-        if (counter !== Object.values(sizeFileNameMap).length) {
-          console.log(Object.values(sizeFileNameMap));
-          throw Error('waiting for all file sizes');
-        }
-      } else {
-        files.push(
-          ...Object.values(data).map(({ filename, size }) => ({
-            filename,
+      if (values.length < sizefiles.length) {
+        for (const { filename, size } of values) {
+          sizes[filename] = {
+            filename: sizeFilePathMap[filename],
             content: size,
-          })),
-        );
+          };
+        }
+        throw Error('waiting for all file sizes');
+      } else {
+        Object.values(data).forEach(({ filename, size }) => {
+          sizes[filename] = {
+            filename: sizeFilePathMap[filename],
+            content: size,
+          };
+        });
       }
     }));
   } catch (error) {
     console.error(error);
   }
-  return files;
+  return Object.values(sizes);
 }
 
 async function cleanUp(context, owner, repo, branch, number) {
@@ -106,17 +102,15 @@ async function get(context) {
       commits,
     } = context.payload;
 
-    const repo = full_name.toLowerCase();
+    const fullRepositoryName = full_name.toLowerCase();
     const branch = ref.replace('refs/heads/', '');
     const config = await getBotConfig(context);
     const baseBranches = config['base-branches'];
-    const sizefilepaths = config['size-files'].map(filename => ({
-      filename,
-      commented: false,
-    }));
+    const sizefiles = config['size-files'];
     if (baseBranches.includes(branch) && !isCommitedByMe(commits)) {
-      const params = { repo, sha };
-      const files = await fetchSizes(params, sizefilepaths);
+      const params = { repo: fullRepositoryName, sha };
+      context.log(`fetching sizes for: ${fullRepositoryName}`);
+      const files = await fetchSizes(params, sizefiles);
       if (files.length) {
         try {
           for (const file of files) {
