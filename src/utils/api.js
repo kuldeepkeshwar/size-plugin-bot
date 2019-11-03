@@ -30,10 +30,8 @@ function fetchWithRetry(makeRequest, options = { max: MAX_RETRY, interval: RETRY
           clearInterval(id);
           resolve(response && response.data);
         } catch (error) {
-          logError(error);
           if (retry === options.max) {
             clearInterval(id);
-            console.error(`failed after retrying ${retry} times`);
             reject(parseError(error));
           }
         }
