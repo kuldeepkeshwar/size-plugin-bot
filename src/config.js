@@ -6,8 +6,6 @@ const SIZE_STORE_ENDPOINT = process.env.SIZE_STORE_ENDPOINT || 'https://size-sto
 const BOT = 'size-plugin[bot]';
 
 const STAR_REPO_MESSAGE = `
-
-
 #### like it?
 ⭐️ [me](https://github.com/kuldeepkeshwar/size-plugin-bot) 😊
 `;
