@@ -125,6 +125,7 @@ async function get(context) {
           const title = `${emoji.random().join(' ')} update sizes`;
           const body = `👇 
 ${head_commit.id} : ${head_commit.message || ''}
+
 ${STAR_REPO_MESSAGE}
 `;
           const { number } = await createPullRequest(context.github, {

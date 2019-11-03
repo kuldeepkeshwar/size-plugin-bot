@@ -5,7 +5,7 @@
 const axios = require('axios');
 const GithubDb = require('simple-github-db');
 const { getBotConfig } = require('./utils/utils');
-const { SIZE_STORE_ENDPOINT } = require('./config');
+const { SIZE_STORE_ENDPOINT, STAR_REPO_MESSAGE } = require('./config');
 const { decorateComment, decorateHeading } = require('./utils/template');
 const { fetchWithRetry } = require('./utils/api');
 const { isPullRequestOpenedByMe } = require('./utils/github');
@@ -74,7 +74,9 @@ ${sizeCommentTemplate(item)}
 Size report for the changes in this PR: 
 ${sizes}
 
-commit: ${sha} 
+commit: ${sha}
+
+${STAR_REPO_MESSAGE}
   `;
 }
 
