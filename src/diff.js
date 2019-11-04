@@ -43,6 +43,8 @@ async function warnForSizeFiles(context, fullRepositoryName, pull_request_number
     } updated`;
     const body = `${WARNGING_MESSAGE} \n \n ${REASON}`;
     const identifier = `${fullRepositoryName}/warning`;
+    context.log(`Adding warning: ${fullRepositoryName}/pull/${pull_request_number}`);
+      
     try {
       const pullRequestMap = await Database.fetchOne({ document: DOCUMENT, identifier });
       const comment_id = pullRequestMap[pull_request_number];
