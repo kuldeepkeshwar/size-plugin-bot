@@ -10,10 +10,13 @@ const STAR_REPO_MESSAGE = `
 ⭐️ [me](https://github.com/kuldeepkeshwar/size-plugin-bot) 😊
 `;
 
+const WARNGING_MESSAGE = '⚠️ [size-plugin bot](https://github.com/apps/size-plugin) automatically updates the stats file(s), avoid manually committing the stats file(s)';
+
 module.exports = {
   MAX_RETRY,
   RETRY_INTERVAL,
   SIZE_STORE_ENDPOINT,
   STAR_REPO_MESSAGE,
+  WARNGING_MESSAGE,
   BOT,
 };

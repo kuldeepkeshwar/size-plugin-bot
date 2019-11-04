@@ -5,7 +5,7 @@
 const axios = require('axios');
 const GithubDb = require('simple-github-db');
 const { getBotConfig } = require('./utils/utils');
-const { SIZE_STORE_ENDPOINT, STAR_REPO_MESSAGE } = require('./config');
+const { SIZE_STORE_ENDPOINT, STAR_REPO_MESSAGE, WARNGING_MESSAGE } = require('./config');
 const { decorateComment, decorateHeading } = require('./utils/template');
 const { fetchWithRetry } = require('./utils/api');
 const { isPullRequestOpenedByMe } = require('./utils/github');
@@ -16,6 +16,61 @@ const DOCUMENT = 'pull_requests';
 
 function createIdentifier(repo) {
   return `${repo}`;
+}
+
+async function warnForSizeFiles(context, fullRepositoryName, pull_request_number, sizefiles) {
+  const [owner, repo] = fullRepositoryName.split('/');
+  const sizeFilePathMap = sizefiles.reduce((acc, item) => {
+    const { dir, filename = item } = item;
+    if (dir) {
+      acc[`${dir}/${filename}`] = true;
+    } else {
+      acc[filename] = true;
+    }
+    return acc;
+  }, {});
+  const { data: files } = await context.github.pulls.listFiles({
+    owner,
+    repo,
+    pull_number: pull_request_number,
+  });
+  const updatedFiles = files
+    .filter(file => sizeFilePathMap[file.filename])
+    .map(file => file.filename);
+  if (updatedFiles.length) {
+    const REASON = `👉 \`${updatedFiles.join('`,`')}\` ${
+      updatedFiles.length === 1 ? 'was' : 'were'
+    } updated`;
+    const body = `${WARNGING_MESSAGE} \n \n ${REASON}`;
+    const identifier = `${fullRepositoryName}/warning`;
+    try {
+      const pullRequestMap = await Database.fetchOne({ document: DOCUMENT, identifier });
+      const comment_id = pullRequestMap[pull_request_number];
+      if (comment_id) {
+        await context.github.issues.updateComment({
+          owner,
+          repo,
+          comment_id,
+          body,
+        });
+      } else {
+        const issueComment = context.issue({ body });
+        const {
+          data: { id },
+        } = await context.github.issues.createComment(issueComment);
+        await Database.update(
+          { document: DOCUMENT, identifier },
+          { ...pullRequestMap, [pull_request_number]: id },
+        );
+      }
+    } catch (error) {
+      const issueComment = context.issue({ body });
+      const {
+        data: { id },
+      } = await context.github.issues.createComment(issueComment);
+      await Database.add({ document: DOCUMENT, identifier }, { [pull_request_number]: id });
+    }
+  }
 }
 
 async function commentPullRequest(context, fullRepositoryName, pull_request_number, body) {
@@ -115,7 +170,7 @@ async function get(context) {
     if (!isPullRequestOpenedByMe(user)) {
       const config = await getBotConfig(context);
       const sizefiles = config['size-files'];
-
+      warnForSizeFiles(context, fullRepositoryName, pull_request_number, sizefiles);
       context.log(`fetching sizes for: ${fullRepositoryName}/pull/${pull_request_number}`);
       const sizes = await fetchSizes(fullRepositoryName, sha, pull_request_number, sizefiles);
       const message = combinedCommentMessageTemplate(sizes, sha);
