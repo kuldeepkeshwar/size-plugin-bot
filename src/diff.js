@@ -173,7 +173,7 @@ async function get(context) {
       const config = await getBotConfig(context);
       const sizefiles = config['size-files'];
       warnForSizeFiles(context, fullRepositoryName, pull_request_number, sizefiles);
-      context.log(`fetching sizes for: ${fullRepositoryName}/pull/${pull_request_number}`);
+      context.log(`fetching diff for: ${fullRepositoryName}/pull/${pull_request_number}`);
       const sizes = await fetchSizes(fullRepositoryName, sha, pull_request_number, sizefiles);
       const message = combinedCommentMessageTemplate(sizes, sha);
       commentPullRequest(context, fullRepositoryName, pull_request_number, message).then(
