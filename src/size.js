@@ -117,7 +117,7 @@ async function get(context) {
             await updateFile(context.github, {
               owner: owner.name,
               repo: name,
-              base: branch,
+              branch,
               file,
             });
           }
