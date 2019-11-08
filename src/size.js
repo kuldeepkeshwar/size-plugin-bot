@@ -141,7 +141,9 @@ ${STAR_REPO_MESSAGE}
             owner: owner.name,
             repo: name,
             pull_number: number,
-            reviewers: commits.map(({ author: { username } }) => username),
+            reviewers: commits
+              .map(({ author: { username } }) => username)
+              .filter(Boolean),
           });
           await cleanUp(context, owner, name, branch, number);
         }
