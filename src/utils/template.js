@@ -35,7 +35,7 @@ function decorateHeading(name, files) {
     const result = files.reduce(
       (agg, item) => {
         agg.total = agg.total - 0 + item.size;
-        agg.delta = agg.delta - 0 + item.diff;
+        agg.delta = agg.delta - 0 + (item.diff || item.delta);
         return agg;
       },
       {

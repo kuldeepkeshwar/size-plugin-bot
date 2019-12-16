@@ -111,9 +111,21 @@ async function get(context) {
       const params = { repo: fullRepositoryName, sha };
       context.log(`fetching sizes for: ${fullRepositoryName}`);
       const files = await fetchSizes(params, sizefiles);
-      if (files.length) {
+      
+      const changedFiles = files.reduce((agg, file) => {
+        const { content: stats } = file;
+        const [recent] = stats;
+        const { files } = recent;
+        if (files.some(({ delta, diff }) => (delta || diff) !== 0)) {
+          const content = [recent];
+          agg.push({ ...file, content });
+        }
+        return agg;
+      }, []);
+      console.log({ changedFiles:JSON.stringify(changedFiles),content:JSON.stringify(files[0].content),fullRepositoryName });
+      if (changedFiles.length) {
         try {
-          for (const file of files) {
+          for (const file of changedFiles) {
             await updateFile(context.github, {
               owner: owner.name,
               repo: name,
@@ -135,7 +147,7 @@ ${STAR_REPO_MESSAGE}
             head: `size-plugin-${Date.now()}`,
             title,
             body,
-            files,
+            files:changedFiles,
           });
           await createReviewRequest(context.github, {
             owner: owner.name,
