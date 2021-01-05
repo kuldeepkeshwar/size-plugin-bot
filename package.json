@@ -20,7 +20,7 @@
         "test:watch": "jest --watch --notify --notifyMode=change --coverage"
     },
     "dependencies": {
-        "axios": "^0.19.0",
+        "axios": "^0.21.1",
         "emojis-list": "^3.0.0",
         "fs-extra": "^8.0.1",
         "pretty-bytes": "^5.2.0",
