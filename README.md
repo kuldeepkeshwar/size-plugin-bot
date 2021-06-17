@@ -7,7 +7,7 @@
   <h1 align="center">size-plugin</h1>
 </p>
 
-> A GitHub 🤖 built with Probot that helps you to keep an 👁️ on static assert 📦 sizes of your application and gives instant feedback 📝 for developer whenever they make change.
+> A GitHub 🤖 built with Probot that helps you to keep an 👁️ on static asset 📦 sizes of your application and gives instant feedback 📝 for developer whenever they make change.
 
 ##### 🤖 comments the gzipped sizes of your webpack assets and the changes since the last build into the relevant PR
 
